@@ -1,0 +1,28 @@
+[package]
+name = "open-tethyr-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "Command-line interface for Open-Tethyr AX protocol toolkit"
+keywords = ["cli", "agent", "discovery", "ax", "protocol"]
+categories = ["command-line-utilities"]
+
+[[bin]]
+name = "open-tethyr"
+path = "src/main.rs"
+
+[dependencies]
+open-tethyr = { path = "../open-tethyr", features = ["full"] }
+clap = { workspace = true }
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde_yaml = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+
+[dev-dependencies]
+proptest = { workspace = true }

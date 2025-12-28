@@ -1,0 +1,45 @@
+[package]
+name = "open-tethyr"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "Open-Tethyr Rust toolkit for Agent Discovery Exchange (AX) protocol"
+keywords = ["agent", "discovery", "ax", "protocol", "cache"]
+categories = ["network-programming", "web-programming", "caching"]
+
+[features]
+default = ["client"]
+client = []
+server = ["axum", "tower", "tower-http"]
+full = ["client", "server"]
+
+[dependencies]
+# Core dependencies (always included)
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde_yaml = { workspace = true }
+reqwest = { workspace = true }
+tokio = { workspace = true }
+trust-dns-resolver = { workspace = true }
+lru = { workspace = true }
+tracing = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+uuid = { workspace = true }
+
+# Server-only dependencies (optional)
+axum = { workspace = true, optional = true }
+tower = { workspace = true, optional = true }
+tower-http = { workspace = true, optional = true }
+
+[dev-dependencies]
+proptest = { workspace = true }
+mockall = { workspace = true }
+wiremock = { workspace = true }
+tracing-subscriber = { workspace = true }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
