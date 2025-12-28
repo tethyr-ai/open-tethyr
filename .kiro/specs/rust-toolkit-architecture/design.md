@@ -1076,7 +1076,7 @@ pub enum AxError {
     Http(#[from] reqwest::Error),
     
     #[error("DNS error: {0}")]
-    Dns(#[from] trust_dns_resolver::error::ResolveError),
+    Dns(#[from] hickory_resolver::error::ResolveError),
     
     #[error("Serialization error: {0}")]
     Serialization(#[from] serde_json::Error),
