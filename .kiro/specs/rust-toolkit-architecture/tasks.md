@@ -13,8 +13,8 @@ This implementation plan breaks down the open-tethyr Rust toolkit into discrete,
   - Add basic CI/CD workflow files
   - _Requirements: 1.1, 1.2, 1.3, 17.3_
 
-- [ ] 2. Implement core AX protocol data models
-  - [ ] 2.1 Create AX record data structures with proper serde annotations
+- [x] 2. Implement core AX protocol data models
+  - [x] 2.1 Create AX record data structures with proper serde annotations
     - Implement AgentExchangeRecord with record_type="AX" and version="1.0"
     - Implement Agent struct (name, description, provider only)
     - Implement Endpoint struct with auth as Vec<String>
@@ -22,15 +22,15 @@ This implementation plan breaks down the open-tethyr Rust toolkit into discrete,
     - Implement AgentExchangeDocument container for multiple records
     - _Requirements: 5.1, 5.2, 9.1, 18.1_
 
-  - [ ] 2.2 Write property test for AX record serialization
+  - [x] 2.2 Write property test for AX record serialization
     - **Property 8: Serialization Round-Trip Consistency**
     - **Validates: Requirements 5.2, 5.3**
 
-  - [ ] 2.3 Write property test for AX version validation
+  - [x] 2.3 Write property test for AX version validation
     - **Property 24: AX Version Validation and Handling**
     - **Validates: Requirements 18.1, 18.3**
 
-  - [ ] 2.4 Implement FileWriter utility
+  - [x] 2.4 Implement FileWriter utility
     - Write well-known file structure to disk
     - Create /.well-known/agent-exchange.json paths
     - Support atomic file operations

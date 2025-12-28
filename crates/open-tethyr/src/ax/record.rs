@@ -17,10 +17,16 @@ pub struct AgentExchangeRecord {
     pub endpoints: Vec<super::Endpoint>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub capabilities: Option<serde_json::Value>,
+    pub capabilities: Option<super::Capabilities>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub security: Option<serde_json::Value>,
+    pub schema: Option<super::Schema>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub limits: Option<super::Limits>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub security: Option<super::Security>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub extensions: Option<serde_json::Value>,

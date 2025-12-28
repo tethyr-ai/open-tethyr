@@ -26,7 +26,6 @@ pub enum Protocol {
     MCP,
     #[serde(rename = "a2a")]
     A2A,
-    #[serde(untagged)]
     Custom(String),
 }
 

@@ -7,4 +7,4 @@ mod client;
 mod file_writer;
 
 pub use client::AxHttpClient;
-pub use file_writer::FileWriter;
+pub use file_writer::{FileWriter, FileWriterError, WellKnownFiles};

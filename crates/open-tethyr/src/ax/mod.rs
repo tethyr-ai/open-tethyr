@@ -11,4 +11,4 @@ mod validator;
 pub use generator::AxGenerator;
 pub use record::{Agent, AgentExchangeDocument, AgentExchangeRecord};
 pub use types::{Capabilities, Endpoint, Limits, Protocol, Schema, Security};
-pub use validator::AxValidator;
+pub use validator::{AxValidator, ValidationError};
