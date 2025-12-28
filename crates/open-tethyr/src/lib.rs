@@ -34,11 +34,11 @@
 
 // Core modules (always available)
 pub mod ax;
+pub mod auth;
 pub mod cache;
 pub mod config;
 pub mod dns;
 pub mod http;
-pub mod oauth;
 
 // Client SDK (default feature)
 #[cfg(feature = "client")]

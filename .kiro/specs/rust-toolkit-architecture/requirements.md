@@ -84,7 +84,7 @@ The open-tethyr Rust toolkit MVP is a distributed caching system for agent disco
 4. THE System SHALL provide ergonomic API for configuration objects
 5. WHEN validating agent records, THE System SHALL enforce required fields and format constraints
 
-### Requirement 6: OAuth Provider Templates
+### Requirement 6: OAuth Provider Templates (MVP)
 
 **User Story:** As an administrator, I want OAuth provider templates, so that I can easily configure authentication for common providers.
 
@@ -92,11 +92,14 @@ The open-tethyr Rust toolkit MVP is a distributed caching system for agent disco
 
 1. THE System SHALL support Okta OAuth configuration with standard endpoint patterns
 2. THE System SHALL support Auth0 OAuth configuration with tenant-specific URLs
-3. THE System SHALL support Azure AD OAuth configuration with tenant ID handling
-4. THE System SHALL support AWS Cognito OAuth configuration with region and user pool
-5. THE System SHALL support Google OAuth configuration with standard endpoints
-6. THE System SHALL support Keycloak OAuth configuration with realm-specific URLs
-7. WHEN generating OAuth endpoints, THE System SHALL follow provider-specific URL patterns
+3. THE System SHALL support Generic OAuth2 configuration for RFC 8414 compliant providers
+4. WHEN generating OAuth endpoints, THE System SHALL follow provider-specific URL patterns
+
+#### Future Expansion (Post-MVP)
+- Azure AD OAuth configuration with tenant ID handling
+- AWS Cognito OAuth configuration with region and user pool  
+- Google OAuth configuration with standard endpoints
+- Keycloak OAuth configuration with realm-specific URLs
 
 ### Requirement 7: Configuration Inheritance
 

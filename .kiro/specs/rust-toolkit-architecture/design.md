@@ -31,7 +31,7 @@ open-tethyr/
 │   │   │   ├── config/        # Configuration handling
 │   │   │   ├── dns/           # DNS discovery
 │   │   │   ├── http/          # HTTP client
-│   │   │   ├── oauth/         # OAuth provider templates
+│   │   │   ├── auth/          # Authentication provider templates
 │   │   │   ├── client.rs      # SDK - #[cfg(feature = "client")]
 │   │   │   └── server/        # Server - #[cfg(feature = "server")]
 │   │   │       ├── mod.rs
@@ -154,7 +154,7 @@ pub mod cache;
 pub mod config;
 pub mod dns;
 pub mod http;
-pub mod oauth;
+pub mod auth;
 
 // Client SDK (default feature)
 #[cfg(feature = "client")]
@@ -460,15 +460,16 @@ impl ConfigValidator {
 }
 ```
 
-#### OAuth Provider Templates (`oauth/`)
+#### Authentication Provider Templates (`auth/`)
 
 ```rust
-// OAuth provider template system
+// Authentication provider template system
 pub trait OAuthProvider {
     fn generate_endpoints(&self, config: &OAuthConfig) -> Result<OAuthEndpoints, OAuthError>;
     fn provider_name(&self) -> &'static str;
 }
 
+// MVP OAuth Providers
 pub struct OktaProvider;
 impl OAuthProvider for OktaProvider {
     fn generate_endpoints(&self, config: &OAuthConfig) -> Result<OAuthEndpoints, OAuthError> {
@@ -484,7 +485,30 @@ impl OAuthProvider for OktaProvider {
     }
 }
 
-// Similar implementations for Auth0, Azure, Cognito, Google, Keycloak
+pub struct Auth0Provider;
+impl OAuthProvider for Auth0Provider {
+    fn generate_endpoints(&self, config: &OAuthConfig) -> Result<OAuthEndpoints, OAuthError> {
+        let domain = config.domain.as_ref().ok_or(OAuthError::MissingDomain)?;
+        Ok(OAuthEndpoints {
+            issuer: format!("https://{}/", domain),
+            authorization_endpoint: format!("https://{}/authorize", domain),
+            token_endpoint: format!("https://{}/oauth/token", domain),
+            jwks_uri: format!("https://{}/.well-known/jwks.json", domain),
+            userinfo_endpoint: format!("https://{}/userinfo", domain),
+            revocation_endpoint: format!("https://{}/oauth/revoke", domain),
+        })
+    }
+}
+
+pub struct GenericOAuth2Provider;
+impl OAuthProvider for GenericOAuth2Provider {
+    fn generate_endpoints(&self, config: &OAuthConfig) -> Result<OAuthEndpoints, OAuthError> {
+        // RFC 8414 compliant discovery or manual configuration
+        // Implementation supports both discovery URL and manual endpoint specification
+    }
+}
+
+// Future providers (post-MVP): Azure, Cognito, Google, Keycloak
 pub struct ProviderRegistry {
     providers: HashMap<String, Box<dyn OAuthProvider>>,
 }

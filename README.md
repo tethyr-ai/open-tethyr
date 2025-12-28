@@ -640,14 +640,16 @@ defaults:
       jwks_uri: https://custom.acme.com/jwks.json
 ```
 
-Supported OAuth providers:
+Supported OAuth providers (MVP):
 - `okta`: Okta standard pattern
-- `auth0`: Auth0 standard pattern
+- `auth0`: Auth0 standard pattern  
+- `generic`: RFC 8414 compliant (default)
+
+Future providers (post-MVP):
 - `azure`: Azure AD / Microsoft Entra ID
 - `cognito`: AWS Cognito
 - `google`: Google OAuth
 - `keycloak`: Keycloak / Red Hat SSO
-- `generic`: RFC 8414 compliant (default)
 
 ### Configuration Examples
 

@@ -83,25 +83,22 @@ This implementation plan breaks down the open-tethyr Rust toolkit into discrete,
     - **Property 20: Configuration Validation Correctness**
     - **Validates: Requirements 13.4**
 
-- [ ] 5. Implement OAuth provider templates
+- [ ] 5. Implement authentication provider templates
   - [ ] 5.1 Create OAuth provider trait and registry
     - Define OAuthProvider trait with endpoint generation
     - Implement provider registry for multiple providers
     - Create OAuthEndpoints data structure
     - _Requirements: 4.5, 6.7_
 
-  - [ ] 5.2 Implement OAuth provider templates
+  - [ ] 5.2 Implement OAuth provider templates (MVP)
     - Implement OktaProvider with standard endpoint patterns
     - Implement Auth0Provider with tenant-specific URLs
-    - Implement AzureProvider with tenant ID handling
-    - Implement CognitoProvider with region and user pool
-    - Implement GoogleProvider with standard endpoints
-    - Implement KeycloakProvider with realm-specific URLs
-    - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6_
+    - Implement GenericOAuth2Provider for RFC 8414 compliant providers
+    - _Requirements: 6.1, 6.2, 6.7_
 
   - [ ] 5.3 Write property test for OAuth provider templates
     - **Property 9: OAuth Provider Template Correctness**
-    - **Validates: Requirements 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7**
+    - **Validates: Requirements 6.1, 6.2, 6.7**
 
 - [ ] 6. Implement DNS discovery and HTTP client
   - [ ] 6.1 Create DNS discovery module
@@ -134,7 +131,7 @@ This implementation plan breaks down the open-tethyr Rust toolkit into discrete,
 
 - [ ] 8. Checkpoint - Core functionality validation
   - Ensure all tests pass for AX protocol, configuration, and discovery
-  - Verify OAuth provider templates generate correct endpoints
+  - Verify authentication provider templates generate correct endpoints
   - Test DNS discovery and HTTP client functionality
   - Ask the user if questions arise
 

@@ -1,78 +1,8 @@
-//! AX protocol implementation
+//! AX Record Validation
 //!
-//! This module provides data structures and validation for the Agent Discovery Exchange (AX) protocol.
+//! Validation logic for AX protocol compliance.
 
-use serde::{Deserialize, Serialize};
-
-/// AX record data structure following AX 1.0 specification
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AgentExchangeRecord {
-    #[serde(default = "default_record_type")]
-    pub record_type: String,
-    
-    #[serde(default = "default_version")]
-    pub version: String,
-    
-    pub agent: Agent,
-    pub endpoints: Vec<Endpoint>,
-    
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub capabilities: Option<serde_json::Value>,
-    
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub security: Option<serde_json::Value>,
-    
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub extensions: Option<serde_json::Value>,
-}
-
-fn default_record_type() -> String {
-    "AX".to_string()
-}
-
-fn default_version() -> String {
-    "1.0".to_string()
-}
-
-/// Agent definition
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Agent {
-    pub name: String,
-    pub description: String,
-    pub provider: String,
-}
-
-/// Container for multiple AX records
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AgentExchangeDocument {
-    pub records: Vec<AgentExchangeRecord>,
-}
-
-/// Endpoint configuration
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Endpoint {
-    pub protocol: Protocol,
-    pub url: String,
-    pub auth: Vec<String>,
-    
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub content_type: Option<String>,
-}
-
-/// Protocol enumeration
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
-pub enum Protocol {
-    Rest,
-    #[serde(rename = "graphql")]
-    GraphQL,
-    #[serde(rename = "mcp")]
-    MCP,
-    #[serde(rename = "a2a")]
-    A2A,
-    #[serde(untagged)]
-    Custom(String),
-}
+use super::{AgentExchangeRecord, Agent, Endpoint};
 
 /// AX protocol validation errors
 #[derive(Debug, thiserror::Error)]
@@ -149,16 +79,5 @@ impl AxValidator {
         }
         
         Ok(())
-    }
-}
-
-/// AX record generator
-pub struct AxGenerator;
-
-impl AxGenerator {
-    /// Generate AX record from configuration
-    pub fn generate_record(_config: &crate::config::AgentConfig) -> Result<AgentExchangeDocument, Box<dyn std::error::Error>> {
-        // Placeholder implementation
-        todo!("Implementation will be added in task 2")
     }
 }
