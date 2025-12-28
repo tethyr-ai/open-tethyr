@@ -168,4 +168,35 @@ mod unit_tests {
         assert_eq!(deserialized.record_type, "AX");
         assert_eq!(deserialized.version, "1.0");
     }
+
+    #[test]
+    fn test_protocol_serialization() {
+        use open_tethyr::ax::Protocol;
+        
+        // Test all protocol variants serialize correctly
+        let protocols = vec![
+            (Protocol::Rest, "\"rest\""),
+            (Protocol::GraphQL, "\"graphql\""),
+            (Protocol::MCP, "\"mcp\""),
+            (Protocol::A2A, "\"a2a\""),
+            // Custom variant serializes as an object with the field name
+            (Protocol::Custom("websocket".to_string()), "{\"custom\":\"websocket\"}"),
+        ];
+
+        for (protocol, expected_json) in protocols {
+            let json = serde_json::to_string(&protocol).unwrap();
+            assert_eq!(json, expected_json, "Protocol {:?} should serialize to {}", protocol, expected_json);
+            
+            // Test round-trip
+            let deserialized: Protocol = serde_json::from_str(&json).unwrap();
+            match (&protocol, &deserialized) {
+                (Protocol::Rest, Protocol::Rest) => {},
+                (Protocol::GraphQL, Protocol::GraphQL) => {},
+                (Protocol::MCP, Protocol::MCP) => {},
+                (Protocol::A2A, Protocol::A2A) => {},
+                (Protocol::Custom(a), Protocol::Custom(b)) => assert_eq!(a, b),
+                _ => panic!("Round-trip failed for {:?}", protocol),
+            }
+        }
+    }
 }

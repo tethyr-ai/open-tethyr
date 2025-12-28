@@ -20,11 +20,8 @@ pub struct Endpoint {
 #[serde(rename_all = "lowercase")]
 pub enum Protocol {
     Rest,
-    #[serde(rename = "graphql")]
     GraphQL,
-    #[serde(rename = "mcp")]
     MCP,
-    #[serde(rename = "a2a")]
     A2A,
     Custom(String),
 }
