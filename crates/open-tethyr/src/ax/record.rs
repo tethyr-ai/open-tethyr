@@ -9,19 +9,19 @@ use serde::{Deserialize, Serialize};
 pub struct AgentExchangeRecord {
     #[serde(default = "default_record_type")]
     pub record_type: String,
-    
+
     #[serde(default = "default_version")]
     pub version: String,
-    
+
     pub agent: Agent,
     pub endpoints: Vec<super::Endpoint>,
-    
+
     #[serde(skip_serializing_if = "Option::is_none")]
     pub capabilities: Option<serde_json::Value>,
-    
+
     #[serde(skip_serializing_if = "Option::is_none")]
     pub security: Option<serde_json::Value>,
-    
+
     #[serde(skip_serializing_if = "Option::is_none")]
     pub extensions: Option<serde_json::Value>,
 }

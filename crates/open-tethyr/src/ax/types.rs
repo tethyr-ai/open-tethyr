@@ -10,7 +10,7 @@ pub struct Endpoint {
     pub protocol: Protocol,
     pub url: String,
     pub auth: Vec<String>,
-    
+
     #[serde(skip_serializing_if = "Option::is_none")]
     pub content_type: Option<String>,
 }
