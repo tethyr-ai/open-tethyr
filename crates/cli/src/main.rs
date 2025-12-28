@@ -3,11 +3,13 @@
 //! Command-line interface for the Open-Tethyr AX protocol toolkit.
 
 use clap::{Parser, Subcommand};
-use std::path::PathBuf;
 
 mod commands;
 
-use commands::{generate::GenerateCommand, validate::ValidateCommand, discover::DiscoverCommand, serve::ServeCommand};
+use commands::{
+    discover::DiscoverCommand, generate::GenerateCommand, serve::ServeCommand,
+    validate::ValidateCommand,
+};
 
 #[derive(Parser)]
 #[command(name = "open-tethyr")]
@@ -34,15 +36,15 @@ pub enum Commands {
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize tracing
     tracing_subscriber::fmt::init();
-    
+
     let cli = Cli::parse();
-    
+
     match cli.command {
         Commands::Generate(cmd) => cmd.execute().await?,
         Commands::Validate(cmd) => cmd.execute().await?,
         Commands::Discover(cmd) => cmd.execute().await?,
         Commands::Serve(cmd) => cmd.execute().await?,
     }
-    
+
     Ok(())
 }

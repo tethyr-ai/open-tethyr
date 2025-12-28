@@ -7,7 +7,7 @@
 pub enum DnsError {
     #[error("DNS lookup failed: {0}")]
     LookupFailed(String),
-    
+
     #[error("Invalid TXT record format: {0}")]
     InvalidFormat(String),
 }

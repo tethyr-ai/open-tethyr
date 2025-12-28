@@ -8,11 +8,11 @@ pub struct GenerateCommand {
     /// Configuration file path
     #[arg(short, long)]
     pub config: PathBuf,
-    
+
     /// Output directory path
     #[arg(short, long)]
     pub output: PathBuf,
-    
+
     /// Validate generated records
     #[arg(long)]
     pub validate: bool,

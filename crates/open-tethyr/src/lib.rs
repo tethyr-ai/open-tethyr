@@ -1,7 +1,7 @@
 //! # Open-Tethyr Rust Toolkit
 //!
 //! A distributed caching system for agent discovery implementing the Agent Discovery Exchange (AX) protocol.
-//! 
+//!
 //! This library provides:
 //! - AX protocol compliance and validation
 //! - DNS-based cache discovery
@@ -33,8 +33,8 @@
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
 // Core modules (always available)
-pub mod ax;
 pub mod auth;
+pub mod ax;
 pub mod cache;
 pub mod config;
 pub mod dns;

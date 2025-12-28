@@ -12,12 +12,13 @@ pub struct ServerConfig {
 pub enum ServerError {
     #[error("Server startup failed: {0}")]
     StartupFailed(String),
-    
+
     #[error("Configuration error: {0}")]
     ConfigError(String),
 }
 
 /// Main cache server
+#[allow(dead_code)] // Temporary: field will be used in task 11
 pub struct CacheServer {
     config: ServerConfig,
 }
@@ -27,7 +28,7 @@ impl CacheServer {
     pub async fn new(config: ServerConfig) -> Result<Self, ServerError> {
         Ok(Self { config })
     }
-    
+
     /// Start the cache server
     pub async fn start(&self) -> Result<(), ServerError> {
         todo!("Implementation will be added in task 11")

@@ -6,7 +6,7 @@ use clap::Args;
 pub struct DiscoverCommand {
     /// Target domain to discover agents from
     pub domain: String,
-    
+
     /// Cache URL to use for discovery
     #[arg(long)]
     pub cache: Option<String>,
