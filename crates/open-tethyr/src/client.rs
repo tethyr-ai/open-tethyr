@@ -2,9 +2,10 @@
 //!
 //! This module provides the main client interface for discovering agents.
 
-use crate::ax::{Agent, AgentExchangeDocument};
+use crate::ax::Agent;
 
 /// Client SDK for agent discovery
+#[allow(dead_code)] // Temporary: field will be used in task 13
 pub struct OpenTethyr {
     domain: String,
 }

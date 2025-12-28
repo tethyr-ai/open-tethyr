@@ -18,6 +18,7 @@ pub enum ServerError {
 }
 
 /// Main cache server
+#[allow(dead_code)] // Temporary: field will be used in task 11
 pub struct CacheServer {
     config: ServerConfig,
 }

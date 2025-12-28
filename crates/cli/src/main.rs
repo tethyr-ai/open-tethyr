@@ -3,7 +3,6 @@
 //! Command-line interface for the Open-Tethyr AX protocol toolkit.
 
 use clap::{Parser, Subcommand};
-use std::path::PathBuf;
 
 mod commands;
 
