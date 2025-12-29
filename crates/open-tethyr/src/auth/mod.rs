@@ -19,7 +19,7 @@ pub use generic::GenericOAuth2Provider;
 pub use okta::OktaProvider;
 pub use provider::OAuthProvider;
 pub use registry::ProviderRegistry;
-pub use types::{OAuthConfig, OAuthEndpoints};
+pub use types::{OAuthConfig, OAuthEndpoints, OAuthError};
 
 // Future: mTLS, JWT, API Key, additional OAuth providers
 // pub mod mtls;

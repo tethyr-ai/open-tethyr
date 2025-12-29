@@ -83,20 +83,20 @@ This implementation plan breaks down the open-tethyr Rust toolkit into discrete,
     - **Property 20: Configuration Validation Correctness**
     - **Validates: Requirements 13.4**
 
-- [ ] 5. Implement authentication provider templates
-  - [ ] 5.1 Create OAuth provider trait and registry
+- [x] 5. Implement authentication provider templates
+  - [x] 5.1 Create OAuth provider trait and registry
     - Define OAuthProvider trait with endpoint generation
     - Implement provider registry for multiple providers
     - Create OAuthEndpoints data structure
     - _Requirements: 4.5, 6.7_
 
-  - [ ] 5.2 Implement OAuth provider templates (MVP)
+  - [x] 5.2 Implement OAuth provider templates (MVP)
     - Implement OktaProvider with standard endpoint patterns
     - Implement Auth0Provider with tenant-specific URLs
     - Implement GenericOAuth2Provider for RFC 8414 compliant providers
     - _Requirements: 6.1, 6.2, 6.7_
 
-  - [ ] 5.3 Write property test for OAuth provider templates
+  - [x] 5.3 Write property test for OAuth provider templates
     - **Property 9: OAuth Provider Template Correctness**
     - **Validates: Requirements 6.1, 6.2, 6.7**
 

@@ -1,0 +1,11 @@
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+cc 8e1253c82fd624743d42a4d4f5c60fcd17fb8c1e72cfd87cd1dd62c7b63b5b38 # shrinks to invalid_domain = "https://acme.auth0.com"
+cc d69aecf83777f54849515f53665a3830cac938ccb844f8c530d818eea29ff41a # shrinks to okta_config = OAuthConfig { domain: Some("company.oktapreview.com"), client_id: None, additional_config: {} }
+cc 912f4f739183d623f91731036bc7a6ce729b04b4c35dae08045a38101550c6ac # shrinks to invalid_domain = "https://dev.okta.com"
+cc c58bc1b559ae81ab39082c7aaf471e6cebf17570bfc769addf6a52e0c2b731c9 # shrinks to config = OAuthConfig { domain: Some("company.oktapreview.com"), client_id: None, additional_config: {} }
+cc 3034ca48d5e214bd13351f75812832f15a4151d35d635ef8dd377158905d1a09 # shrinks to okta_config = OAuthConfig { domain: Some("company.oktapreview.com"), client_id: None, additional_config: {} }, auth0_config = OAuthConfig { domain: Some("acme.auth0.com"), client_id: None, additional_config: {} }, generic_config = OAuthConfig { domain: Some("auth.example.com"), client_id: Some("test-client-id"), additional_config: {} }
