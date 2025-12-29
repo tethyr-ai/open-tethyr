@@ -23,14 +23,16 @@ pub struct FileWriter;
 impl FileWriter {
     /// Write well-known file structure to disk
     /// Creates the standard /.well-known/agent-exchange.json structure
-    pub fn write_structure(output_dir: &Path, files: &WellKnownFiles) -> Result<(), FileWriterError> {
+    pub fn write_structure(
+        output_dir: &Path,
+        files: &WellKnownFiles,
+    ) -> Result<(), FileWriterError> {
         // Create the .well-known directory
         let well_known_dir = output_dir.join(".well-known");
-        fs::create_dir_all(&well_known_dir)
-            .map_err(|e| FileWriterError::DirectoryCreation {
-                path: well_known_dir.clone(),
-                source: e,
-            })?;
+        fs::create_dir_all(&well_known_dir).map_err(|e| FileWriterError::DirectoryCreation {
+            path: well_known_dir.clone(),
+            source: e,
+        })?;
 
         // Write the main agent-exchange.json file atomically
         let agent_exchange_path = well_known_dir.join("agent-exchange.json");
@@ -46,17 +48,22 @@ impl FileWriter {
     }
 
     /// Write an AX record document to a specific path
-    pub fn write_ax_record(path: &Path, document: &AgentExchangeDocument) -> Result<(), FileWriterError> {
-        let json_content = serde_json::to_string_pretty(document)
-            .map_err(FileWriterError::Serialization)?;
-        
+    pub fn write_ax_record(
+        path: &Path,
+        document: &AgentExchangeDocument,
+    ) -> Result<(), FileWriterError> {
+        let json_content =
+            serde_json::to_string_pretty(document).map_err(FileWriterError::Serialization)?;
+
         Self::write_file_atomic(path, &json_content)
     }
 
     /// Generate well-known file structure from an AX document
-    pub fn generate_well_known_files(document: &AgentExchangeDocument) -> Result<WellKnownFiles, FileWriterError> {
-        let agent_exchange_json = serde_json::to_string_pretty(document)
-            .map_err(FileWriterError::Serialization)?;
+    pub fn generate_well_known_files(
+        document: &AgentExchangeDocument,
+    ) -> Result<WellKnownFiles, FileWriterError> {
+        let agent_exchange_json =
+            serde_json::to_string_pretty(document).map_err(FileWriterError::Serialization)?;
 
         Ok(WellKnownFiles {
             agent_exchange_json,
@@ -69,37 +76,37 @@ impl FileWriter {
     fn write_file_atomic(path: &Path, content: &str) -> Result<(), FileWriterError> {
         // Create parent directory if it doesn't exist
         if let Some(parent) = path.parent() {
-            fs::create_dir_all(parent)
-                .map_err(|e| FileWriterError::DirectoryCreation {
-                    path: parent.to_path_buf(),
-                    source: e,
-                })?;
+            fs::create_dir_all(parent).map_err(|e| FileWriterError::DirectoryCreation {
+                path: parent.to_path_buf(),
+                source: e,
+            })?;
         }
 
         // Create a temporary file in the same directory as the target
         let temp_dir = path.parent().unwrap_or_else(|| Path::new("."));
-        let mut temp_file = NamedTempFile::new_in(temp_dir)
-            .map_err(|e| FileWriterError::TempFileCreation {
+        let mut temp_file =
+            NamedTempFile::new_in(temp_dir).map_err(|e| FileWriterError::TempFileCreation {
                 path: temp_dir.to_path_buf(),
                 source: e,
             })?;
 
         // Write content to temporary file
-        temp_file.write_all(content.as_bytes())
+        temp_file
+            .write_all(content.as_bytes())
             .map_err(|e| FileWriterError::Write {
                 path: path.to_path_buf(),
                 source: e,
             })?;
 
         // Ensure all data is written to disk
-        temp_file.flush()
-            .map_err(|e| FileWriterError::Write {
-                path: path.to_path_buf(),
-                source: e,
-            })?;
+        temp_file.flush().map_err(|e| FileWriterError::Write {
+            path: path.to_path_buf(),
+            source: e,
+        })?;
 
         // Atomically move the temporary file to the target location
-        temp_file.persist(path)
+        temp_file
+            .persist(path)
             .map_err(|e| FileWriterError::AtomicMove {
                 from: e.file.path().to_path_buf(),
                 to: path.to_path_buf(),
@@ -202,13 +209,16 @@ mod tests {
     fn test_write_well_known_structure() {
         let temp_dir = TempDir::new().unwrap();
         let document = create_test_document();
-        
+
         let files = FileWriter::generate_well_known_files(&document).unwrap();
         let result = FileWriter::write_structure(temp_dir.path(), &files);
         assert!(result.is_ok());
 
         // Verify the well-known directory and file were created
-        let well_known_path = temp_dir.path().join(".well-known").join("agent-exchange.json");
+        let well_known_path = temp_dir
+            .path()
+            .join(".well-known")
+            .join("agent-exchange.json");
         assert!(well_known_path.exists());
 
         // Verify content is valid
@@ -221,11 +231,11 @@ mod tests {
     fn test_atomic_write_operation() {
         let temp_dir = TempDir::new().unwrap();
         let file_path = temp_dir.path().join("atomic-test.json");
-        
+
         // Write some content
         let result = FileWriter::write_file_atomic(&file_path, r#"{"test": "content"}"#);
         assert!(result.is_ok());
-        
+
         // Verify file exists and has correct content
         assert!(file_path.exists());
         let content = fs::read_to_string(&file_path).unwrap();

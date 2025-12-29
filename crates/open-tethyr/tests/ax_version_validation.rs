@@ -3,7 +3,9 @@
 //! **Feature: rust-toolkit-architecture, Property 24: AX Version Validation and Handling**
 //! **Validates: Requirements 18.1, 18.3**
 
-use open_tethyr::ax::{Agent, AgentExchangeRecord, AxValidator, Endpoint, Protocol, ValidationError};
+use open_tethyr::ax::{
+    Agent, AgentExchangeRecord, AxValidator, Endpoint, Protocol, ValidationError,
+};
 use proptest::prelude::*;
 
 /// Generate arbitrary version strings for property testing
@@ -61,22 +63,22 @@ proptest! {
         record in arb_agent_exchange_record_with_version()
     ) {
         let validation_result = AxValidator::validate_record(&record);
-        
+
         if record.version == "1.0" {
             // Version 1.0 should always be valid (assuming other fields are valid)
-            prop_assert!(validation_result.is_ok(), 
+            prop_assert!(validation_result.is_ok(),
                 "Version 1.0 should be valid, but got error: {:?}", validation_result);
         } else {
             // Any other version should be invalid
-            prop_assert!(validation_result.is_err(), 
+            prop_assert!(validation_result.is_err(),
                 "Version {} should be invalid, but validation passed", record.version);
-            
+
             // Check that the error is specifically about unsupported version
             if let Err(ValidationError::UnsupportedVersion(version)) = validation_result {
                 prop_assert_eq!(&version, &record.version);
             } else {
-                prop_assert!(false, 
-                    "Expected UnsupportedVersion error for version {}, but got: {:?}", 
+                prop_assert!(false,
+                    "Expected UnsupportedVersion error for version {}, but got: {:?}",
                     record.version, validation_result);
             }
         }
@@ -86,19 +88,19 @@ proptest! {
     #[test]
     fn test_version_validation_direct(version in arb_version()) {
         let validation_result = AxValidator::validate_version(&version);
-        
+
         if version == "1.0" {
-            prop_assert!(validation_result.is_ok(), 
+            prop_assert!(validation_result.is_ok(),
                 "Version 1.0 should be valid, but got error: {:?}", validation_result);
         } else {
-            prop_assert!(validation_result.is_err(), 
+            prop_assert!(validation_result.is_err(),
                 "Version {} should be invalid, but validation passed", version);
-            
+
             if let Err(ValidationError::UnsupportedVersion(v)) = validation_result {
                 prop_assert_eq!(&v, &version);
             } else {
-                prop_assert!(false, 
-                    "Expected UnsupportedVersion error for version {}, but got: {:?}", 
+                prop_assert!(false,
+                    "Expected UnsupportedVersion error for version {}, but got: {:?}",
                     version, validation_result);
             }
         }
@@ -119,7 +121,7 @@ mod unit_tests {
     fn test_invalid_version_2_0() {
         let result = AxValidator::validate_version("2.0");
         assert!(result.is_err());
-        
+
         if let Err(ValidationError::UnsupportedVersion(version)) = result {
             assert_eq!(version, "2.0");
         } else {
@@ -131,7 +133,7 @@ mod unit_tests {
     fn test_invalid_empty_version() {
         let result = AxValidator::validate_version("");
         assert!(result.is_err());
-        
+
         if let Err(ValidationError::UnsupportedVersion(version)) = result {
             assert_eq!(version, "");
         } else {
@@ -155,7 +157,7 @@ mod unit_tests {
 
         let result = AxValidator::validate_record(&record);
         assert!(result.is_err());
-        
+
         if let Err(ValidationError::UnsupportedVersion(version)) = result {
             assert_eq!(version, "2.0");
         } else {

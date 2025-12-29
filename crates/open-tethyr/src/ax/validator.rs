@@ -32,13 +32,8 @@ pub struct AxValidator;
 
 impl AxValidator {
     /// Supported authentication methods as per AX specification
-    const SUPPORTED_AUTH_METHODS: &'static [&'static str] = &[
-        "OIDC",
-        "OAuth2", 
-        "mTLS",
-        "JWT",
-        "API_KEY",
-    ];
+    const SUPPORTED_AUTH_METHODS: &'static [&'static str] =
+        &["OIDC", "OAuth2", "mTLS", "JWT", "API_KEY"];
 
     /// Validate an AX record for compliance
     pub fn validate_record(record: &AgentExchangeRecord) -> Result<(), ValidationError> {
@@ -92,9 +87,10 @@ impl AxValidator {
         for (index, endpoint) in endpoints.iter().enumerate() {
             // Validate URL format
             if endpoint.url.trim().is_empty() {
-                return Err(ValidationError::MissingField(
-                    format!("endpoints[{}].url", index)
-                ));
+                return Err(ValidationError::MissingField(format!(
+                    "endpoints[{}].url",
+                    index
+                )));
             }
 
             // Validate URL is properly formatted
@@ -102,9 +98,10 @@ impl AxValidator {
 
             // Validate auth methods are present
             if endpoint.auth.is_empty() {
-                return Err(ValidationError::MissingField(
-                    format!("endpoints[{}].auth", index)
-                ));
+                return Err(ValidationError::MissingField(format!(
+                    "endpoints[{}].auth",
+                    index
+                )));
             }
 
             // Validate auth methods are from supported set
@@ -116,35 +113,38 @@ impl AxValidator {
 
     /// Validate auth methods are from supported set (OIDC, OAuth2, mTLS, JWT, API_KEY)
     pub fn validate_auth_methods(auth_methods: &[String]) -> Result<(), ValidationError> {
-        let supported_methods: HashSet<&str> = Self::SUPPORTED_AUTH_METHODS.iter().copied().collect();
-        
+        let supported_methods: HashSet<&str> =
+            Self::SUPPORTED_AUTH_METHODS.iter().copied().collect();
+
         for auth_method in auth_methods {
             let trimmed_method = auth_method.trim();
             if !supported_methods.contains(trimmed_method) {
                 return Err(ValidationError::InvalidAuthMethod(auth_method.clone()));
             }
         }
-        
+
         Ok(())
     }
 
     /// Validate URL format
     pub fn validate_url(url: &str) -> Result<(), ValidationError> {
         let trimmed_url = url.trim();
-        
+
         // Basic URL validation - must be HTTPS
         if !trimmed_url.starts_with("https://") {
-            return Err(ValidationError::InvalidUrl(
-                format!("URL must use HTTPS: {}", url)
-            ));
+            return Err(ValidationError::InvalidUrl(format!(
+                "URL must use HTTPS: {}",
+                url
+            )));
         }
 
         // Use url crate for more comprehensive validation
         match url::Url::parse(trimmed_url) {
             Ok(_) => Ok(()),
-            Err(_) => Err(ValidationError::InvalidUrl(
-                format!("Invalid URL format: {}", url)
-            )),
+            Err(_) => Err(ValidationError::InvalidUrl(format!(
+                "Invalid URL format: {}",
+                url
+            ))),
         }
     }
 }

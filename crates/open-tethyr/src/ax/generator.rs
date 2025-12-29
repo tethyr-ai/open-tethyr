@@ -12,13 +12,13 @@ use thiserror::Error;
 pub enum GenerationError {
     #[error("Invalid protocol: {0}")]
     InvalidProtocol(String),
-    
+
     #[error("Missing required field: {0}")]
     MissingField(String),
-    
+
     #[error("IO error: {0}")]
     IoError(#[from] std::io::Error),
-    
+
     #[error("Serialization error: {0}")]
     SerializationError(#[from] serde_json::Error),
 }
@@ -37,33 +37,34 @@ impl AxGenerator {
     /// Generate AX record document from configuration
     pub fn generate_record(config: &AgentConfig) -> Result<AgentExchangeDocument, GenerationError> {
         let mut records = Vec::new();
-        
+
         for agent_def in &config.agents {
             // Merge with defaults
             let merged_agent = ConfigMerger::merge_agent(agent_def, &config.defaults);
-            
+
             // Create agent
             let agent = Agent {
                 name: merged_agent.name.clone(),
                 description: merged_agent.description.clone(),
-                provider: merged_agent.provider.ok_or_else(|| {
-                    GenerationError::MissingField("provider".to_string())
-                })?,
+                provider: merged_agent
+                    .provider
+                    .ok_or_else(|| GenerationError::MissingField("provider".to_string()))?,
             };
-            
+
             // Create endpoint
-            let protocol = Self::parse_protocol(&merged_agent.protocol.unwrap_or_else(|| "rest".to_string()))?;
-            let auth = merged_agent.auth.ok_or_else(|| {
-                GenerationError::MissingField("auth".to_string())
-            })?;
-            
+            let protocol =
+                Self::parse_protocol(&merged_agent.protocol.unwrap_or_else(|| "rest".to_string()))?;
+            let auth = merged_agent
+                .auth
+                .ok_or_else(|| GenerationError::MissingField("auth".to_string()))?;
+
             let endpoint = Endpoint {
                 protocol,
                 url: merged_agent.url.clone(),
                 auth,
                 content_type: merged_agent.content_type,
             };
-            
+
             // Create AX record
             let record = AgentExchangeRecord {
                 record_type: "AX".to_string(),
@@ -80,25 +81,25 @@ impl AxGenerator {
                 security: merged_agent.security.map(|_| super::Security {}),
                 extensions: merged_agent.extensions,
             };
-            
+
             records.push(record);
         }
-        
+
         Ok(AgentExchangeDocument { records })
     }
-    
+
     /// Generate well-known file structure
     pub fn generate_well_known_structure(
         document: &AgentExchangeDocument,
     ) -> Result<WellKnownFiles, GenerationError> {
         let json_content = serde_json::to_string_pretty(document)?;
-        
+
         Ok(WellKnownFiles {
             agent_exchange_json: json_content,
             path: "/.well-known/agent-exchange.json".to_string(),
         })
     }
-    
+
     /// Write well-known structure to filesystem
     pub fn write_well_known_structure(
         output_dir: &Path,
@@ -106,13 +107,13 @@ impl AxGenerator {
     ) -> Result<(), GenerationError> {
         let well_known_dir = output_dir.join(".well-known");
         std::fs::create_dir_all(&well_known_dir)?;
-        
+
         let file_path = well_known_dir.join("agent-exchange.json");
         std::fs::write(file_path, &files.agent_exchange_json)?;
-        
+
         Ok(())
     }
-    
+
     /// Parse protocol string to Protocol enum
     fn parse_protocol(protocol_str: &str) -> Result<Protocol, GenerationError> {
         match protocol_str.to_lowercase().as_str() {

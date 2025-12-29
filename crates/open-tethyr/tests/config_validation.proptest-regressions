@@ -1,0 +1,9 @@
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+cc 5305882d23fa7098b3dfbe813faec46cae71240d3c26f3e7c0b2f0590ba4175b # shrinks to valid_url = "https://api0example\u{3347a}com/path", invalid_url = ""
+cc b596a8e84321b3c72f642494d6a2db02245e921e8bd6c98cf3b52205359c0f0d # shrinks to valid_domain = "sub domain\0coAuk", invalid_domain = ""
+cc 97a92e82068e6726ff65558b9110adb4a4bbfeec9c8c25ddeac8135e3ac801b2 # shrinks to config = AgentConfig { defaults: None, agents: [AgentDefinition { name: "a0", description: "a.", url: "https://example com", provider: Some("Agent Provider"), auth: Some(["JWT"]), protocol: Some("graphql"), content_type: Some("application/json"), domain: None, port: None, ttl: None, capabilities: None, limits: None, security: None, extensions: None }] }

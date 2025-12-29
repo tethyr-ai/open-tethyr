@@ -62,19 +62,24 @@ fn arb_agent_definition() -> impl Strategy<Value = AgentDefinition> {
         arb_auth_methods(),
         arb_protocol(),
     )
-        .prop_map(|(name, description, url, provider, auth, protocol)| AgentDefinition {
-            name,
-            description,
-            url,
-            provider: Some(provider),
-            auth: Some(auth),
-            protocol: Some(protocol),
-            content_type: Some("application/json".to_string()),
-            capabilities: None,
-            limits: None,
-            security: None,
-            extensions: None,
-        })
+        .prop_map(
+            |(name, description, url, provider, auth, protocol)| AgentDefinition {
+                name,
+                description,
+                url,
+                provider: Some(provider),
+                auth: Some(auth),
+                protocol: Some(protocol),
+                content_type: Some("application/json".to_string()),
+                domain: None,
+                port: None,
+                ttl: None,
+                capabilities: None,
+                limits: None,
+                security: None,
+                extensions: None,
+            },
+        )
 }
 
 /// Generate agent defaults
@@ -87,6 +92,9 @@ fn arb_agent_defaults() -> impl Strategy<Value = Option<AgentDefaults>> {
                 auth: Some(auth),
                 protocol: Some(protocol),
                 content_type: Some("application/json".to_string()),
+                domain: None,
+                port: None,
+                ttl: None,
                 capabilities: None,
                 limits: None,
                 security: None,
@@ -115,33 +123,33 @@ proptest! {
         // Generate AX records from configuration
         let document = AxGenerator::generate_record(&config)
             .expect("Generation should succeed for valid configuration");
-        
+
         // Verify document structure
         prop_assert!(!document.records.is_empty(), "Document should contain at least one record");
         prop_assert_eq!(document.records.len(), config.agents.len(), "Should generate one record per agent");
-        
+
         // Validate each generated record
         for record in &document.records {
             // Validate record passes AX validation
             AxValidator::validate_record(record)
                 .expect("Generated record should pass AX validation");
-            
+
             // Verify AX protocol compliance
             prop_assert_eq!(&record.record_type, "AX", "Record type must be 'AX'");
             prop_assert_eq!(&record.version, "1.0", "Version must be '1.0'");
-            
+
             // Verify agent fields are populated
             prop_assert!(!record.agent.name.trim().is_empty(), "Agent name must not be empty");
             prop_assert!(!record.agent.description.trim().is_empty(), "Agent description must not be empty");
             prop_assert!(!record.agent.provider.trim().is_empty(), "Agent provider must not be empty");
-            
+
             // Verify endpoints
             prop_assert!(!record.endpoints.is_empty(), "Must have at least one endpoint");
-            
+
             for endpoint in &record.endpoints {
                 // Verify URL is HTTPS
                 prop_assert!(endpoint.url.starts_with("https://"), "Endpoint URL must use HTTPS");
-                
+
                 // Verify auth methods are from supported set
                 prop_assert!(!endpoint.auth.is_empty(), "Endpoint must have auth methods");
                 for auth_method in &endpoint.auth {
@@ -153,7 +161,7 @@ proptest! {
             }
         }
     }
-    
+
     /// Property: Well-known file structure generation
     /// For any valid AX document, generating well-known structure should produce
     /// valid JSON that can be parsed back to equivalent document
@@ -163,22 +171,22 @@ proptest! {
         // Generate AX document
         let document = AxGenerator::generate_record(&config)
             .expect("Generation should succeed");
-        
+
         // Generate well-known structure
         let well_known = AxGenerator::generate_well_known_structure(&document)
             .expect("Well-known structure generation should succeed");
-        
+
         // Verify path is correct
         prop_assert_eq!(well_known.path, "/.well-known/agent-exchange.json");
-        
+
         // Verify JSON is valid and can be parsed back
-        let parsed_document: open_tethyr::ax::AgentExchangeDocument = 
+        let parsed_document: open_tethyr::ax::AgentExchangeDocument =
             serde_json::from_str(&well_known.agent_exchange_json)
                 .expect("Generated JSON should be valid");
-        
+
         // Verify parsed document has same structure
         prop_assert_eq!(parsed_document.records.len(), document.records.len());
-        
+
         // Verify each record in parsed document is valid
         for record in &parsed_document.records {
             AxValidator::validate_record(record)

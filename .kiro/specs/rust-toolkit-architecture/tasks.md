@@ -58,8 +58,8 @@ This implementation plan breaks down the open-tethyr Rust toolkit into discrete,
     - **Property 2: AX Record Validation Correctness**
     - **Validates: Requirements 2.2, 5.5**
 
-- [ ] 4. Implement configuration system with inheritance
-  - [ ] 4.1 Create configuration data models and parsing
+- [x] 4. Implement configuration system with inheritance
+  - [x] 4.1 Create configuration data models and parsing
     - Implement AgentConfig with defaults and agents sections
     - Support YAML configuration file parsing
     - Implement configuration validation:
@@ -69,17 +69,17 @@ This implementation plan breaks down the open-tethyr Rust toolkit into discrete,
       - TTL values are positive integers
     - _Requirements: 7.1, 13.1, 13.4_
 
-  - [ ] 4.2 Implement configuration inheritance and merging
+  - [x] 4.2 Implement configuration inheritance and merging
     - Create ConfigMerger for type-safe inheritance
     - Support nested inheritance for complex objects
     - Preserve agent-specific overrides of defaults
     - _Requirements: 7.2, 7.3, 7.4, 7.5_
 
-  - [ ] 4.3 Write property test for configuration inheritance
+  - [x] 4.3 Write property test for configuration inheritance
     - **Property 10: Configuration Inheritance Correctness**
     - **Validates: Requirements 7.2, 7.3, 7.4, 7.5**
 
-  - [ ] 4.4 Write property test for configuration validation
+  - [x] 4.4 Write property test for configuration validation
     - **Property 20: Configuration Validation Correctness**
     - **Validates: Requirements 13.4**
 

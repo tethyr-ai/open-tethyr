@@ -50,11 +50,8 @@ fn arb_endpoint() -> impl Strategy<Value = Endpoint> {
 
 /// Generate arbitrary AgentExchangeRecord instances for property testing
 fn arb_agent_exchange_record() -> impl Strategy<Value = AgentExchangeRecord> {
-    (
-        arb_agent(),
-        prop::collection::vec(arb_endpoint(), 1..5),
-    )
-        .prop_map(|(agent, endpoints)| AgentExchangeRecord {
+    (arb_agent(), prop::collection::vec(arb_endpoint(), 1..5)).prop_map(|(agent, endpoints)| {
+        AgentExchangeRecord {
             record_type: "AX".to_string(),
             version: "1.0".to_string(),
             agent,
@@ -64,7 +61,8 @@ fn arb_agent_exchange_record() -> impl Strategy<Value = AgentExchangeRecord> {
             limits: None,
             security: None,
             extensions: None,
-        })
+        }
+    })
 }
 
 /// Generate arbitrary AgentExchangeDocument instances for property testing
@@ -172,7 +170,7 @@ mod unit_tests {
     #[test]
     fn test_protocol_serialization() {
         use open_tethyr::ax::Protocol;
-        
+
         // Test all protocol variants serialize correctly
         let protocols = vec![
             (Protocol::Rest, "\"rest\""),
@@ -180,20 +178,27 @@ mod unit_tests {
             (Protocol::MCP, "\"mcp\""),
             (Protocol::A2A, "\"a2a\""),
             // Custom variant serializes as an object with the field name
-            (Protocol::Custom("websocket".to_string()), "{\"custom\":\"websocket\"}"),
+            (
+                Protocol::Custom("websocket".to_string()),
+                "{\"custom\":\"websocket\"}",
+            ),
         ];
 
         for (protocol, expected_json) in protocols {
             let json = serde_json::to_string(&protocol).unwrap();
-            assert_eq!(json, expected_json, "Protocol {:?} should serialize to {}", protocol, expected_json);
-            
+            assert_eq!(
+                json, expected_json,
+                "Protocol {:?} should serialize to {}",
+                protocol, expected_json
+            );
+
             // Test round-trip
             let deserialized: Protocol = serde_json::from_str(&json).unwrap();
             match (&protocol, &deserialized) {
-                (Protocol::Rest, Protocol::Rest) => {},
-                (Protocol::GraphQL, Protocol::GraphQL) => {},
-                (Protocol::MCP, Protocol::MCP) => {},
-                (Protocol::A2A, Protocol::A2A) => {},
+                (Protocol::Rest, Protocol::Rest) => {}
+                (Protocol::GraphQL, Protocol::GraphQL) => {}
+                (Protocol::MCP, Protocol::MCP) => {}
+                (Protocol::A2A, Protocol::A2A) => {}
                 (Protocol::Custom(a), Protocol::Custom(b)) => assert_eq!(a, b),
                 _ => panic!("Round-trip failed for {:?}", protocol),
             }

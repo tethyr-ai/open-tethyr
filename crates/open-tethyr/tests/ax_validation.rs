@@ -3,7 +3,9 @@
 //! **Feature: rust-toolkit-architecture, Property 2: AX Record Validation Correctness**
 //! **Validates: Requirements 2.2, 5.5**
 
-use open_tethyr::ax::{Agent, AgentExchangeRecord, AxValidator, Endpoint, Protocol, ValidationError};
+use open_tethyr::ax::{
+    Agent, AgentExchangeRecord, AxValidator, Endpoint, Protocol, ValidationError,
+};
 use proptest::prelude::*;
 
 /// Generate valid agent names (non-empty, reasonable length)
@@ -97,7 +99,11 @@ fn arb_invalid_auth_methods() -> impl Strategy<Value = Vec<String>> {
 
 /// Generate valid agent
 fn arb_valid_agent() -> impl Strategy<Value = Agent> {
-    (arb_valid_agent_name(), arb_valid_description(), arb_valid_provider())
+    (
+        arb_valid_agent_name(),
+        arb_valid_description(),
+        arb_valid_provider(),
+    )
         .prop_map(|(name, description, provider)| Agent {
             name,
             description,
@@ -107,18 +113,20 @@ fn arb_valid_agent() -> impl Strategy<Value = Agent> {
 
 /// Generate valid endpoint
 fn arb_valid_endpoint() -> impl Strategy<Value = Endpoint> {
-    (arb_valid_https_url(), arb_valid_auth_methods())
-        .prop_map(|(url, auth)| Endpoint {
-            protocol: Protocol::Rest,
-            url,
-            auth,
-            content_type: Some("application/json".to_string()),
-        })
+    (arb_valid_https_url(), arb_valid_auth_methods()).prop_map(|(url, auth)| Endpoint {
+        protocol: Protocol::Rest,
+        url,
+        auth,
+        content_type: Some("application/json".to_string()),
+    })
 }
 
 /// Generate valid AX record
 fn arb_valid_ax_record() -> impl Strategy<Value = AgentExchangeRecord> {
-    (arb_valid_agent(), prop::collection::vec(arb_valid_endpoint(), 1..3))
+    (
+        arb_valid_agent(),
+        prop::collection::vec(arb_valid_endpoint(), 1..3),
+    )
         .prop_map(|(agent, endpoints)| AgentExchangeRecord {
             record_type: "AX".to_string(),
             version: "1.0".to_string(),
@@ -166,7 +174,7 @@ proptest! {
 
         let result = AxValidator::validate_record(&record);
         prop_assert!(result.is_err(), "Invalid record type should be rejected");
-        
+
         if let Err(ValidationError::InvalidRecordType(_)) = result {
             // Expected error type
         } else {
@@ -197,7 +205,7 @@ proptest! {
 
         let result = AxValidator::validate_record(&record);
         prop_assert!(result.is_err(), "Invalid version should be rejected");
-        
+
         if let Err(ValidationError::UnsupportedVersion(_)) = result {
             // Expected error type
         } else {
@@ -220,7 +228,7 @@ proptest! {
             description,
             provider,
         };
-        
+
         let record = AgentExchangeRecord {
             record_type: "AX".to_string(),
             version: "1.0".to_string(),
@@ -235,7 +243,7 @@ proptest! {
 
         let result = AxValidator::validate_record(&record);
         prop_assert!(result.is_err(), "Invalid agent name should be rejected");
-        
+
         if let Err(ValidationError::MissingField(field)) = result {
             prop_assert!(field.contains("agent.name"), "Should indicate missing agent.name field");
         } else {
@@ -258,7 +266,7 @@ proptest! {
             auth,
             content_type: Some("application/json".to_string()),
         };
-        
+
         let record = AgentExchangeRecord {
             record_type: "AX".to_string(),
             version: "1.0".to_string(),
@@ -290,7 +298,7 @@ proptest! {
             auth: invalid_auth,
             content_type: Some("application/json".to_string()),
         };
-        
+
         let record = AgentExchangeRecord {
             record_type: "AX".to_string(),
             version: "1.0".to_string(),
@@ -326,7 +334,7 @@ proptest! {
 
         let result = AxValidator::validate_record(&record);
         prop_assert!(result.is_err(), "Empty endpoints should be rejected");
-        
+
         if let Err(ValidationError::MissingField(field)) = result {
             prop_assert!(field.contains("endpoints"), "Should indicate missing endpoints field");
         } else {
