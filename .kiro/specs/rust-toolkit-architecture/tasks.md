@@ -36,25 +36,25 @@ This implementation plan breaks down the open-tethyr Rust toolkit into discrete,
     - Support atomic file operations
     - _Requirements: 2.5, 9.2_
 
-- [ ] 3. Implement AX protocol validation and generation
-  - [ ] 3.1 Create AxValidator with comprehensive validation rules
+- [x] 3. Implement AX protocol validation and generation
+  - [x] 3.1 Create AxValidator with comprehensive validation rules
     - Validate record_type is "AX"
     - Validate version is "1.0"
     - Validate required fields and format constraints
     - Validate auth methods are from supported set (OIDC, OAuth2, mTLS, JWT, API_KEY)
     - _Requirements: 2.2, 5.5, 9.3, 18.1_
 
-  - [ ] 3.2 Create AxGenerator for record generation from configuration
+  - [x] 3.2 Create AxGenerator for record generation from configuration
     - Generate AX-compliant records from YAML config
     - Support configuration inheritance and merging
     - Generate well-known file structure
     - _Requirements: 2.1, 9.1, 9.2_
 
-  - [ ] 3.3 Write property test for AX record generation
+  - [x] 3.3 Write property test for AX record generation
     - **Property 1: AX Record Generation Correctness**
     - **Validates: Requirements 2.1, 9.1, 9.3**
 
-  - [ ] 3.4 Write property test for AX record validation
+  - [x] 3.4 Write property test for AX record validation
     - **Property 2: AX Record Validation Correctness**
     - **Validates: Requirements 2.2, 5.5**
 

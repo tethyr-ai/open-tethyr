@@ -8,7 +8,7 @@ mod record;
 mod types;
 mod validator;
 
-pub use generator::AxGenerator;
+pub use generator::{AxGenerator, GenerationError, WellKnownFiles};
 pub use record::{Agent, AgentExchangeDocument, AgentExchangeRecord};
 pub use types::{Capabilities, Endpoint, Limits, Protocol, Schema, Security};
 pub use validator::{AxValidator, ValidationError};
