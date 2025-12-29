@@ -5,7 +5,6 @@
 
 use open_tethyr::ax::{Agent, AgentExchangeDocument, AgentExchangeRecord, Endpoint, Protocol};
 use proptest::prelude::*;
-use serde_json;
 
 /// Generate arbitrary Agent instances for property testing
 fn arb_agent() -> impl Strategy<Value = Agent> {

@@ -174,8 +174,8 @@ proptest! {
     /// **Validates: Requirements 7.4, 7.5**
     #[test]
     fn test_nested_inheritance_correctness(
-        agent_caps in prop::option::of(prop::collection::hash_map("[a-z]{3,10}", any::<bool>().prop_map(|b| serde_json::Value::Bool(b)), 0..3)),
-        default_caps in prop::option::of(prop::collection::hash_map("[a-z]{3,10}", any::<bool>().prop_map(|b| serde_json::Value::Bool(b)), 0..3))
+        agent_caps in prop::option::of(prop::collection::hash_map("[a-z]{3,10}", any::<bool>().prop_map(serde_json::Value::Bool), 0..3)),
+        default_caps in prop::option::of(prop::collection::hash_map("[a-z]{3,10}", any::<bool>().prop_map(serde_json::Value::Bool), 0..3))
     ) {
         let agent = AgentDefinition {
             name: "test".to_string(),

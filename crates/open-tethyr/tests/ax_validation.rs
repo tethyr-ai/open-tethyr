@@ -27,27 +27,9 @@ fn arb_valid_description() -> impl Strategy<Value = String> {
     "[a-zA-Z][a-zA-Z0-9 .,!?_-]{0,199}".prop_map(|s| s.trim().to_string())
 }
 
-/// Generate invalid descriptions (empty or whitespace-only)
-fn arb_invalid_description() -> impl Strategy<Value = String> {
-    prop_oneof![
-        Just("".to_string()),
-        Just("   ".to_string()),
-        Just("\t\n".to_string()),
-    ]
-}
-
 /// Generate valid provider names
 fn arb_valid_provider() -> impl Strategy<Value = String> {
     "[a-zA-Z][a-zA-Z0-9 ._-]{0,49}".prop_map(|s| s.trim().to_string())
-}
-
-/// Generate invalid provider names (empty or whitespace-only)
-fn arb_invalid_provider() -> impl Strategy<Value = String> {
-    prop_oneof![
-        Just("".to_string()),
-        Just("   ".to_string()),
-        Just("\t\n".to_string()),
-    ]
 }
 
 /// Generate valid HTTPS URLs
