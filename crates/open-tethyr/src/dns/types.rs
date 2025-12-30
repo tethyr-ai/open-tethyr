@@ -10,4 +10,7 @@ pub enum DnsError {
 
     #[error("Invalid TXT record format: {0}")]
     InvalidFormat(String),
+
+    #[error("Invalid endpoint format: {0}")]
+    InvalidEndpointFormat(String),
 }

@@ -100,26 +100,26 @@ This implementation plan breaks down the open-tethyr Rust toolkit into discrete,
     - **Property 9: OAuth Provider Template Correctness**
     - **Validates: Requirements 6.1, 6.2, 6.7**
 
-- [ ] 6. Implement DNS discovery and HTTP client
-  - [ ] 6.1 Create DNS discovery module
+- [x] 6. Implement DNS discovery and HTTP client
+  - [x] 6.1 Create DNS discovery module
     - Implement DnsDiscovery with TXT record lookup
     - Parse cache endpoint URLs from DNS TXT records
     - Support _ax-cache.<domain> discovery pattern
     - Handle DNS lookup failures gracefully
     - _Requirements: 4.2, 11.1, 11.4, 11.6_
 
-  - [ ] 6.2 Create HTTP client for AX endpoint fetching
+  - [x] 6.2 Create HTTP client for AX endpoint fetching
     - Implement AxHttpClient with configurable timeout (30s default)
     - Build correct AX URLs (_agent.<domain>/.well-known/agent-exchange.json)
     - Validate HTTPS certificates and well-known paths
     - Support both cache and direct discovery modes
     - _Requirements: 4.3, 9.4, 9.5, 9.6, 15.4, 15.5_
 
-  - [ ] 6.3 Write property test for DNS TXT record parsing
+  - [x] 6.3 Write property test for DNS TXT record parsing
     - **Property 18: DNS TXT Record Parsing Correctness**
     - **Validates: Requirements 11.4, 11.6**
 
-  - [ ] 6.4 Write property test for AX URL construction
+  - [x] 6.4 Write property test for AX URL construction
     - **Property 13: AX Subdomain URL Construction**
     - **Validates: Requirements 9.4**
 
