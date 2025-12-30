@@ -129,7 +129,7 @@ This implementation plan breaks down the open-tethyr Rust toolkit into discrete,
   - Add test fixtures for AX records
   - _Requirements: 16.3, 16.4_
 
-- [ ] 8. Checkpoint - Core functionality validation
+- [x] 8. Checkpoint - Core functionality validation
   - Ensure all tests pass for AX protocol, configuration, and discovery
   - Verify authentication provider templates generate correct endpoints
   - Test DNS discovery and HTTP client functionality

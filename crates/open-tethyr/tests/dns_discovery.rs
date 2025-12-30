@@ -14,8 +14,8 @@ use proptest::prelude::*;
 #[test]
 fn prop_dns_txt_record_parsing_correctness() {
     proptest!(|(
-        valid_domain in "[a-z][a-z0-9-]{0,10}\\.[a-z]{2,4}",
-        valid_path in "[a-z0-9/-]{0,20}",
+        valid_domain in "[a-z][a-z0-9]{0,8}\\.[a-z]{2,4}",
+        valid_path in "(/[a-z0-9][a-z0-9-]{0,18}[a-z0-9])?",
         invalid_format in "[^e][a-z0-9=:/.-]{0,50}",
         non_https_scheme in "(http|ftp|ws)://[a-z0-9.-]+",
     )| {

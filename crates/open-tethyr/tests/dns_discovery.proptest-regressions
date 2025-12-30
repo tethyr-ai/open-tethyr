@@ -1,0 +1,7 @@
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+cc d454b63a78a6b20192c3d97613160d500e7a2b9b989d73fcf9c159be8da12d6d # shrinks to valid_domain = "a.xn", valid_path = "--", invalid_format = "¡", non_https_scheme = "http://-"
