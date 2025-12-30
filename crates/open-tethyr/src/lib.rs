@@ -40,6 +40,10 @@ pub mod config;
 pub mod dns;
 pub mod http;
 
+// Test utilities (only available in test builds)
+#[cfg(test)]
+pub mod test_utils;
+
 // Client SDK (default feature)
 #[cfg(feature = "client")]
 #[cfg_attr(docsrs, doc(cfg(feature = "client")))]

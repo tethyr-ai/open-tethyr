@@ -123,7 +123,7 @@ This implementation plan breaks down the open-tethyr Rust toolkit into discrete,
     - **Property 13: AX Subdomain URL Construction**
     - **Validates: Requirements 9.4**
 
-- [ ] 7. Implement test utilities and mocks
+- [x] 7. Implement test utilities and mocks
   - Create MockDnsResolver for testing
   - Create MockHttpServer with wiremock
   - Add test fixtures for AX records
