@@ -135,8 +135,8 @@ This implementation plan breaks down the open-tethyr Rust toolkit into discrete,
   - Test DNS discovery and HTTP client functionality
   - Ask the user if questions arise
 
-- [ ] 9. Implement cache storage and coordination
-  - [ ] 9.1 Create in-memory cache implementation
+- [x] 9. Implement cache storage and coordination
+  - [x] 9.1 Create in-memory cache implementation
     - Implement MemoryCache with HashMap storage
     - Implement LRU eviction with configurable max_entries limit
     - Support TTL expiration and cache statistics
@@ -145,7 +145,7 @@ This implementation plan breaks down the open-tethyr Rust toolkit into discrete,
     - Implement cache invalidation and cleanup
     - _Requirements: 10.1, 10.2, 10.3, 10.6_
 
-  - [ ] 9.2 Create cache coordination for hierarchical caching
+  - [x] 9.2 Create cache coordination for hierarchical caching
     - Implement CacheCoordinator with fallback chain
     - Support DNS-based root cache discovery
     - Handle upstream cache failures gracefully
@@ -153,35 +153,35 @@ This implementation plan breaks down the open-tethyr Rust toolkit into discrete,
     - Build dependency graph and use depth-first search to detect cycles
     - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.6_
 
-  - [ ] 9.3 Write property test for cache behavior
+  - [x] 9.3 Write property test for cache behavior
     - **Property 4: Cache-First Discovery Behavior**
     - **Validates: Requirements 3.2**
 
-  - [ ] 9.4 Write property test for cache miss fallback
+  - [x] 9.4 Write property test for cache miss fallback
     - **Property 5: Cache Miss Fallback Behavior**
     - **Validates: Requirements 3.3, 9.6**
 
-  - [ ] 9.5 Write property test for TTL expiration
+  - [x] 9.5 Write property test for TTL expiration
     - **Property 7: TTL Expiration Correctness**
     - **Validates: Requirements 3.5, 10.6**
 
-  - [ ] 9.6 Write property test for LRU eviction
+  - [x] 9.6 Write property test for LRU eviction
     - **Property 15: LRU Cache Eviction Correctness**
     - **Validates: Requirements 10.3**
 
-  - [ ] 9.7 Write property test for hierarchical caching
+  - [x] 9.7 Write property test for hierarchical caching
     - **Property 11: Hierarchical Cache Fallback Chain**
     - **Validates: Requirements 8.2, 8.3, 8.4, 8.6**
 
-  - [ ] 9.8 Write property test for circular dependency prevention
+  - [x] 9.8 Write property test for circular dependency prevention
     - **Property 12: Circular Dependency Prevention**
     - **Validates: Requirements 8.5**
 
-  - [ ] 9.9 Write property test for Cache-Control header compliance
+  - [x] 9.9 Write property test for Cache-Control header compliance
     - **Property 16: Cache-Control Header Compliance**
     - **Validates: Requirements 10.8**
 
-  - [ ] 9.10 Write property test for cache size limit enforcement
+  - [x] 9.10 Write property test for cache size limit enforcement
     - **Property 26: Cache Size Limit Enforcement**
     - **Validates: Requirements 10.3, 10.5**
 

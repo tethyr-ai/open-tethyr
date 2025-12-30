@@ -9,8 +9,8 @@ mod rate_limiter;
 mod stats;
 mod types;
 
-pub use coordinator::CacheCoordinator;
+pub use coordinator::{CacheCoordinator, CacheCoordinatorConfig, CacheError};
 pub use memory::MemoryCache;
 pub use rate_limiter::{RateLimiter, TokenBucket};
-pub use stats::{CacheStats, SimpleHistogram};
-pub use types::{CacheConfig, CacheEntry, RateLimitConfig};
+pub use stats::{CacheStats, CacheStatsSnapshot, SimpleHistogram, ThreadSafeHistogram};
+pub use types::{CacheConfig, CacheControl, CacheEntry, RateLimitConfig};
