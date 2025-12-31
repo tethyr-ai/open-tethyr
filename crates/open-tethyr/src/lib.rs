@@ -39,6 +39,7 @@ pub mod cache;
 pub mod config;
 pub mod dns;
 pub mod http;
+pub mod policy;
 
 // Test utilities (only available in test builds)
 #[cfg(test)]

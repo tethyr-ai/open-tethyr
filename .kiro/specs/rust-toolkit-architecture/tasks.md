@@ -185,26 +185,26 @@ This implementation plan breaks down the open-tethyr Rust toolkit into discrete,
     - **Property 26: Cache Size Limit Enforcement**
     - **Validates: Requirements 10.3, 10.5**
 
-- [ ] 10. Implement policy enforcement and rate limiting
-  - [ ] 10.1 Create policy enforcement engine
+- [x] 10. Implement policy enforcement and rate limiting
+  - [x] 10.1 Create policy enforcement engine
     - Implement domain locking policies
     - Support allowlist configuration for external domains
     - Return appropriate HTTP error responses for violations
     - Log all discovery requests for audit purposes
     - _Requirements: 12.1, 12.2, 12.3, 12.5_
 
-  - [ ] 10.2 Create rate limiting with token bucket algorithm
+  - [x] 10.2 Create rate limiting with token bucket algorithm
     - Implement TokenBucket with refill mechanism
     - Add per-client IP rate limiting
     - Support configurable rate limits
     - Return HTTP 429 for exceeded limits
     - _Requirements: 15.1, 15.3_
 
-  - [ ] 10.3 Write property test for domain locking
+  - [x] 10.3 Write property test for domain locking
     - **Property 6: Domain Locking Policy Enforcement**
     - **Validates: Requirements 3.4, 12.1, 12.2, 12.5**
 
-  - [ ] 10.4 Write property test for rate limiting
+  - [x] 10.4 Write property test for rate limiting
     - **Property 21: Rate Limiting Enforcement**
     - **Validates: Requirements 15.1, 15.3**
 
