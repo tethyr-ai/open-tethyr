@@ -297,29 +297,49 @@ impl CacheCoordinator {
         // Add manual cache endpoints
         for (domain, cache_url) in &self.config.manual_cache_endpoints {
             // Extract domain from cache URL for dependency tracking
-            if let Ok(url) = url::Url::parse(cache_url) {
-                if let Some(cache_domain) = url.host_str() {
-                    graph
-                        .entry(domain.clone())
-                        .or_default()
-                        .push(cache_domain.to_string());
-                }
-            }
+            let url = url::Url::parse(cache_url).map_err(|e| {
+                CacheError::ConfigurationError(format!(
+                    "Invalid cache URL '{}' for domain '{}': {}",
+                    cache_url, domain, e
+                ))
+            })?;
+
+            let cache_domain = url.host_str().ok_or_else(|| {
+                CacheError::ConfigurationError(format!(
+                    "Cache URL '{}' for domain '{}' has no host",
+                    cache_url, domain
+                ))
+            })?;
+
+            graph
+                .entry(domain.clone())
+                .or_default()
+                .push(cache_domain.to_string());
         }
 
         // Add root cache dependency if configured
         if let Some(ref root_cache_url) = self.config.root_cache_url {
-            if let Ok(url) = url::Url::parse(root_cache_url) {
-                if let Some(root_domain) = url.host_str() {
-                    // All domains depend on root cache
-                    let domains: Vec<String> = graph.keys().cloned().collect();
-                    for domain in domains {
-                        graph
-                            .entry(domain)
-                            .or_default()
-                            .push(root_domain.to_string());
-                    }
-                }
+            let url = url::Url::parse(root_cache_url).map_err(|e| {
+                CacheError::ConfigurationError(format!(
+                    "Invalid root cache URL '{}': {}",
+                    root_cache_url, e
+                ))
+            })?;
+
+            let root_domain = url.host_str().ok_or_else(|| {
+                CacheError::ConfigurationError(format!(
+                    "Root cache URL '{}' has no host",
+                    root_cache_url
+                ))
+            })?;
+
+            // All domains depend on root cache
+            let domains: Vec<String> = graph.keys().cloned().collect();
+            for domain in domains {
+                graph
+                    .entry(domain)
+                    .or_default()
+                    .push(root_domain.to_string());
             }
         }
 

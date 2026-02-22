@@ -36,7 +36,9 @@ fn arb_ax_document() -> impl Strategy<Value = AgentExchangeDocument> {
 
 /// Generate a valid domain name for testing
 fn arb_domain() -> impl Strategy<Value = String> {
-    "[a-z][a-z0-9-]{1,10}\\.[a-z]{2,4}"
+    // Generate domains that don't start with "xn--" to avoid punycode issues
+    // and don't have consecutive hyphens or hyphens at start/end of labels
+    prop::string::string_regex(r"[a-z][a-z0-9]{1,10}\.[a-z]{2,4}").unwrap()
 }
 
 /// Generate a TTL duration for testing
