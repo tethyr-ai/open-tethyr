@@ -21,6 +21,7 @@ hickory-resolver = "0.24"
 lru = "0.16"
 url = "2.5"
 regex = "1.0"
+chrono = "0.4"
 
 # CLI dependencies
 clap = { version = "4.0", features = ["derive"] }

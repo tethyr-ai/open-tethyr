@@ -11,6 +11,6 @@ mod types;
 
 pub use coordinator::{CacheCoordinator, CacheCoordinatorConfig, CacheError};
 pub use memory::MemoryCache;
-pub use rate_limiter::{RateLimiter, TokenBucket};
+pub use rate_limiter::{RateLimitError, RateLimiter, TokenBucket};
 pub use stats::{CacheStats, CacheStatsSnapshot, SimpleHistogram, ThreadSafeHistogram};
 pub use types::{CacheConfig, CacheControl, CacheEntry, RateLimitConfig};

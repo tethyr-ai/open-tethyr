@@ -208,8 +208,8 @@ This implementation plan breaks down the open-tethyr Rust toolkit into discrete,
     - **Property 21: Rate Limiting Enforcement**
     - **Validates: Requirements 15.1, 15.3**
 
-- [ ] 11. Implement cache server (feature = "server")
-  - [ ] 11.1 Create cache server with HTTP API
+- [x] 11. Implement cache server (feature = "server")
+  - [x] 11.1 Create cache server with HTTP API
     - Implement CacheServer with axum framework
     - Add discovery endpoint with policy enforcement
     - Include health check endpoint
@@ -218,22 +218,22 @@ This implementation plan breaks down the open-tethyr Rust toolkit into discrete,
     - Add structured logging with correlation IDs
     - _Requirements: 3.1, 14.1, 14.4_
 
-  - [ ] 11.2 Add middleware and error handling
+  - [x] 11.2 Add middleware and error handling
     - Implement rate limiting middleware
     - Add structured JSON error responses with error message, timestamp, correlation ID
     - Include request timeout handling
     - Add correlation ID to response headers
     - _Requirements: 15.5, 15.6_
 
-  - [ ] 11.3 Write property test for HTTP error responses
+  - [x] 11.3 Write property test for HTTP error responses
     - **Property 23: HTTP Error Response Mapping**
     - **Validates: Requirements 15.6**
 
-  - [ ] 11.4 Write property test for request timeout handling
+  - [x] 11.4 Write property test for request timeout handling
     - **Property 22: Request Timeout Handling**
     - **Validates: Requirements 15.5**
 
-  - [ ] 11.5 Write property test for HTTPS certificate validation
+  - [x] 11.5 Write property test for HTTPS certificate validation
     - **Property 14: HTTPS Certificate Validation**
     - **Validates: Requirements 9.5, 15.4**
 

@@ -143,6 +143,19 @@ impl CacheControl {
 }
 
 /// Rate limit configuration
+#[derive(Debug, Clone)]
 pub struct RateLimitConfig {
-    // Implementation will be added in task 10.2
+    /// Maximum requests per minute per client IP
+    pub requests_per_minute: u32,
+    /// Maximum requests per hour per client IP
+    pub requests_per_hour: u32,
+}
+
+impl Default for RateLimitConfig {
+    fn default() -> Self {
+        Self {
+            requests_per_minute: 60,
+            requests_per_hour: 3600,
+        }
+    }
 }

@@ -102,9 +102,9 @@ pub struct CacheStatsSnapshot {
 /// Simple histogram for request duration tracking
 #[derive(Debug)]
 pub struct SimpleHistogram {
-    buckets: Vec<(Duration, u64)>, // (upper_bound, count)
-    total_count: u64,
-    sum: Duration,
+    pub buckets: Vec<(Duration, u64)>, // (upper_bound, count)
+    pub total_count: u64,
+    pub sum: Duration,
 }
 
 impl SimpleHistogram {

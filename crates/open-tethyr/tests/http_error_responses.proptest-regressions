@@ -1,0 +1,8 @@
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+cc e4d1d6064107211b292a9d788800a5b2bb8c653956fb807be05eea6bf2013f01 # shrinks to external_domain = "a-.aa", org_domain = "a-.ab"
+cc 638b268f4bcd6b876eb3493569f49c0f71da04600bc14820c88ba3fc6c98d49c # shrinks to blocked_domain = "aa.aa", allowed_domain = "a-.aa"
