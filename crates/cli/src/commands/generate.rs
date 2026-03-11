@@ -1,6 +1,8 @@
 //! Generate command implementation
 
 use clap::Args;
+use open_tethyr::ax::{AxGenerator, AxValidator};
+use open_tethyr::config::ConfigLoader;
 use std::path::PathBuf;
 
 #[derive(Args)]
@@ -21,6 +23,31 @@ pub struct GenerateCommand {
 impl GenerateCommand {
     /// Execute the generate command
     pub async fn execute(&self) -> Result<(), Box<dyn std::error::Error>> {
-        todo!("Implementation will be added in task 12")
+        // Load YAML configuration with inheritance
+        let config = ConfigLoader::load_from_file(&self.config).await?;
+
+        // Generate AX records
+        let document = AxGenerator::generate_record(&config)?;
+
+        // Validate if requested
+        if self.validate {
+            for record in &document.records {
+                AxValidator::validate_record(record)?;
+            }
+        }
+
+        // Generate well-known file structure
+        let files = AxGenerator::generate_well_known_structure(&document)?;
+
+        // Write to output directory
+        AxGenerator::write_well_known_structure(&self.output, &files)?;
+
+        println!(
+            "Successfully generated {} AX record(s) to {}",
+            document.records.len(),
+            self.output.display()
+        );
+
+        Ok(())
     }
 }

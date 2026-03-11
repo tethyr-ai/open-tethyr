@@ -1,0 +1,7 @@
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+cc 8123861ac01d75489f9b8d8c14abc490db83761d42c68bfd550d5d096cb9b550 # shrinks to target_domain = "aaa.aa", agent_name = "A0A0 a", agent_description = "aaA,AaA aA A 0aA,a a", agent_provider = "AA0A"

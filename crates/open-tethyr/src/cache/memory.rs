@@ -9,6 +9,7 @@ use std::collections::HashMap;
 use std::num::NonZeroUsize;
 use std::sync::{Arc, Mutex, RwLock};
 use std::time::Duration;
+use tracing::{debug, info, warn};
 
 /// In-memory cache with LRU eviction and TTL support
 #[derive(Debug)]
@@ -55,6 +56,12 @@ impl MemoryCache {
                     false
                 };
 
+                if is_expired {
+                    debug!(domain = %domain, "Cache entry expired");
+                } else if should_invalidate {
+                    debug!(domain = %domain, "Cache-Control directive prevents caching");
+                }
+
                 if is_expired || should_invalidate {
                     (true, None)
                 } else {
@@ -77,10 +84,12 @@ impl MemoryCache {
                 lru.get(domain);
             }
 
+            debug!(domain = %domain, "Cache hit");
             self.stats.record_hit();
             return Some(document);
         }
 
+        debug!(domain = %domain, "Cache miss");
         self.stats.record_miss();
         None
     }
@@ -98,12 +107,23 @@ impl MemoryCache {
         // Check if caching is allowed by Cache-Control
         if let Some(ref cc) = cache_control {
             if !cc.allows_caching() {
+                debug!(
+                    domain = %domain,
+                    cache_control = ?cache_control_header,
+                    "Caching not allowed by Cache-Control header"
+                );
                 return; // Don't cache if no-cache or no-store
             }
         }
 
         // Determine effective TTL
         let effective_ttl = self.calculate_effective_ttl(ttl, &cache_control);
+        debug!(
+            domain = %domain,
+            requested_ttl_secs = ttl.as_secs(),
+            effective_ttl_secs = effective_ttl.as_secs(),
+            "Storing document in cache"
+        );
 
         let entry = CacheEntry::new(document, domain.to_string(), effective_ttl, cache_control);
 
@@ -114,7 +134,10 @@ impl MemoryCache {
         {
             let mut entries = match self.entries.write() {
                 Ok(entries) => entries,
-                Err(_) => return, // Lock poisoned, skip caching
+                Err(_) => {
+                    warn!(domain = %domain, "Failed to acquire write lock for cache");
+                    return;
+                }
             };
 
             entries.insert(domain.to_string(), entry);
@@ -126,6 +149,7 @@ impl MemoryCache {
         }
 
         self.update_stats().await;
+        info!(domain = %domain, cache_size = self.size(), "Document cached successfully");
     }
 
     /// Remove a specific entry from the cache
@@ -236,9 +260,16 @@ impl MemoryCache {
         if current_size >= self.config.max_entries {
             // Need to evict entries using LRU policy
             let entries_to_evict = current_size - self.config.max_entries + 1;
+            debug!(
+                current_size = current_size,
+                max_entries = self.config.max_entries,
+                entries_to_evict = entries_to_evict,
+                "Cache at capacity, evicting LRU entries"
+            );
 
             for _ in 0..entries_to_evict {
                 if let Some(key_to_evict) = self.get_lru_key() {
+                    debug!(domain = %key_to_evict, "Evicting LRU entry");
                     self.invalidate(&key_to_evict).await;
                     self.stats.record_eviction();
                 } else {

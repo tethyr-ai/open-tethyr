@@ -237,8 +237,8 @@ This implementation plan breaks down the open-tethyr Rust toolkit into discrete,
     - **Property 14: HTTPS Certificate Validation**
     - **Validates: Requirements 9.5, 15.4**
 
-- [ ] 12. Implement CLI commands
-  - [ ] 12.1 Create CLI structure with clap
+- [x] 12. Implement CLI commands
+  - [x] 12.1 Create CLI structure with clap
     - Implement main CLI with all subcommands in single binary
     - Add generate command for AX record creation
     - Add validate command for AX record validation
@@ -246,55 +246,55 @@ This implementation plan breaks down the open-tethyr Rust toolkit into discrete,
     - Add serve command for cache server
     - _Requirements: 2.1, 2.2, 2.3, 2.5_
 
-  - [ ] 12.2 Implement generate command
+  - [x] 12.2 Implement generate command
     - Load YAML configuration with inheritance
     - Generate AX records with validation
     - Create well-known file structure output
     - Support validation flag for generated records
     - _Requirements: 2.1, 2.5_
 
-  - [ ] 12.3 Implement discover command
+  - [x] 12.3 Implement discover command
     - Test agent discovery with/without cache
     - Support --cache flag for explicit cache URL
     - Display discovered agents
     - _Requirements: 2.3_
 
-  - [ ] 12.4 Implement validate command
+  - [x] 12.4 Implement validate command
     - Validate existing AX record files
     - Report validation errors clearly
     - _Requirements: 2.2_
 
-  - [ ] 12.5 Implement serve command
+  - [x] 12.5 Implement serve command
     - Start cache server with configuration
     - Support --domain, --port, --config flags
     - _Requirements: 3.1_
 
-  - [ ] 12.6 Write property test for well-known file structure
+  - [x] 12.6 Write property test for well-known file structure
     - **Property 3: Well-Known File Structure Generation**
     - **Validates: Requirements 2.5, 9.2**
 
-- [ ] 13. Implement client SDK (feature = "client")
-  - [ ] 13.1 Create OpenTethyr client SDK
+- [x] 13. Implement client SDK (feature = "client")
+  - [x] 13.1 Create OpenTethyr client SDK
     - Implement client initialization with domain
     - Add automatic cache discovery via DNS
     - Support both cached and direct discovery modes
     - Provide clean API for agent discovery
     - _Requirements: 4.6, 11.2, 11.3_
 
-  - [ ] 13.2 Write property test for DNS cache discovery routing
+  - [x] 13.2 Write property test for DNS cache discovery routing
     - **Property 17: DNS Cache Discovery Routing**
     - **Validates: Requirements 11.2, 11.3**
 
-  - [ ] 13.3 Write property test for DNS error resilience
+  - [x] 13.3 Write property test for DNS error resilience
     - **Property 19: DNS Discovery Error Resilience**
     - **Validates: Requirements 11.5**
 
-  - [ ] 13.4 Write property test for auth method validation
+  - [x] 13.4 Write property test for auth method validation
     - **Property 25: Auth Method Validation**
     - **Validates: Requirements 9.3, 15.4**
 
-- [ ] 14. Add comprehensive error handling and logging
-  - [ ] 14.1 Implement structured error types
+- [-] 14. Add comprehensive error handling and logging
+  - [-] 14.1 Implement structured error types
     - Create error types with thiserror for all modules
     - Add HTTP error response mapping
     - Include detailed error context and correlation

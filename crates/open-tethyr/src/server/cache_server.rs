@@ -1,16 +1,16 @@
 //! Main cache server implementation
 
 use crate::cache::{
-    CacheCoordinator, CacheCoordinatorConfig, CacheError, CacheStats, RateLimitConfig, RateLimiter,
+    CacheCoordinator, CacheCoordinatorConfig, CacheStats, RateLimitConfig, RateLimiter,
 };
-use crate::policy::enforcement::{DomainPolicy, PolicyEngine, PolicyViolation};
+use crate::policy::enforcement::{DomainPolicy, PolicyEngine};
+use crate::server::error::ServerError;
 use crate::server::handlers::{handle_discover, handle_health, handle_metrics};
 use crate::server::middleware::rate_limit_middleware;
 use axum::{extract::FromRef, middleware, routing::get, Router};
 use std::net::SocketAddr;
 use std::sync::Arc;
 use std::time::Duration;
-use thiserror::Error;
 use tower_http::trace::TraceLayer;
 use tracing::info;
 
@@ -42,28 +42,6 @@ impl Default for ServerConfig {
             request_timeout: Duration::from_secs(30),
         }
     }
-}
-
-/// Cache server errors
-#[derive(Debug, Error)]
-pub enum ServerError {
-    #[error("Server startup failed: {0}")]
-    StartupFailed(String),
-
-    #[error("Configuration error: {0}")]
-    ConfigError(String),
-
-    #[error("Cache error: {0}")]
-    CacheError(#[from] CacheError),
-
-    #[error("Policy violation: {0}")]
-    PolicyViolation(#[from] PolicyViolation),
-
-    #[error("IO error: {0}")]
-    IoError(#[from] std::io::Error),
-
-    #[error("Invalid bind address: {0}")]
-    InvalidBindAddress(String),
 }
 
 /// Shared application state

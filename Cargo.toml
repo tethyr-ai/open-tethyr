@@ -13,7 +13,7 @@ serde_json = "1.0"
 serde_yaml = "0.9"
 reqwest = { version = "0.12", features = ["json", "rustls-tls"] }
 tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["json"] }
+tracing-subscriber = { version = "0.3", features = ["json", "env-filter"] }
 anyhow = "1.0"
 thiserror = "2.0"
 uuid = { version = "1.0", features = ["v4"] }

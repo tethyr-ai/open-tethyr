@@ -9,6 +9,10 @@ description = "Command-line interface for Open-Tethyr AX protocol toolkit"
 keywords = ["cli", "agent", "discovery", "ax", "protocol"]
 categories = ["command-line-utilities"]
 
+[lib]
+name = "open_tethyr_cli"
+path = "src/lib.rs"
+
 [[bin]]
 name = "open-tethyr"
 path = "src/main.rs"
@@ -26,3 +30,6 @@ tracing-subscriber = { workspace = true }
 
 [dev-dependencies]
 proptest = { workspace = true }
+tempfile = "3.8"
+tokio = { workspace = true, features = ["test-util"] }
+wiremock = { workspace = true }

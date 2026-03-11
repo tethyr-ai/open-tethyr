@@ -1,8 +1,9 @@
 //! HTTP request handlers
 
 use crate::cache::CacheCoordinator;
-use crate::policy::enforcement::{PolicyEngine, PolicyViolation};
+use crate::policy::enforcement::PolicyEngine;
 use crate::server::cache_server::CacheMetrics;
+use crate::server::error::ServerError;
 use axum::{
     extract::{Path, State},
     http::{HeaderMap, StatusCode},
@@ -155,52 +156,4 @@ pub async fn handle_metrics(State(metrics): State<Arc<CacheMetrics>>) -> String 
         snapshot.total_entries,
         snapshot.eviction_count,
     )
-}
-
-/// Server error types
-#[derive(Debug)]
-pub enum ServerError {
-    PolicyViolation(PolicyViolation),
-    DiscoveryFailed(String),
-}
-
-impl IntoResponse for ServerError {
-    fn into_response(self) -> Response {
-        let (status, error_message) = match self {
-            ServerError::PolicyViolation(PolicyViolation::DomainNotAllowed { domain }) => (
-                StatusCode::FORBIDDEN,
-                format!(
-                    "Domain '{}' is not allowed by domain locking policy",
-                    domain
-                ),
-            ),
-            ServerError::PolicyViolation(PolicyViolation::ExternalDomainBlocked { domain }) => (
-                StatusCode::FORBIDDEN,
-                format!("External domain '{}' is not in allowlist", domain),
-            ),
-            ServerError::PolicyViolation(PolicyViolation::InvalidDomain { domain }) => (
-                StatusCode::BAD_REQUEST,
-                format!("Invalid domain format: '{}'", domain),
-            ),
-            ServerError::DiscoveryFailed(msg) => (
-                StatusCode::BAD_GATEWAY,
-                format!("Discovery failed: {}", msg),
-            ),
-        };
-
-        let correlation_id = Uuid::new_v4();
-        let body = Json(json!({
-            "error": error_message,
-            "timestamp": chrono::Utc::now().to_rfc3339(),
-            "correlation_id": correlation_id.to_string(),
-        }));
-
-        let mut response = (status, body).into_response();
-        response.headers_mut().insert(
-            "x-correlation-id",
-            correlation_id.to_string().parse().unwrap(),
-        );
-
-        response
-    }
 }

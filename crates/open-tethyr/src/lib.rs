@@ -39,6 +39,7 @@ pub mod cache;
 pub mod config;
 pub mod dns;
 pub mod http;
+pub mod logging;
 pub mod policy;
 
 // Test utilities (only available in test builds)
@@ -63,7 +64,15 @@ pub use server::CacheServer;
 
 // Re-export commonly used types
 pub use ax::{Agent, AgentExchangeDocument, AgentExchangeRecord, Endpoint, Protocol};
-pub use config::AgentConfig;
+pub use config::{AgentConfig, ConfigError};
+
+// Re-export error types
+pub use client::ClientError;
+pub use dns::DnsError;
+pub use http::HttpError;
+
+#[cfg(feature = "server")]
+pub use server::ServerError;
 
 /// Result type alias for the library
 pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;

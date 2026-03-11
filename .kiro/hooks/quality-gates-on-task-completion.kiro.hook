@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Quality Gates on Task Completion",
+  "description": "Runs cargo fmt check, clippy, tests, and build verification when a task is completed. All errors and warnings MUST be resolved.",
+  "version": "1",
+  "when": {
+    "type": "postTaskExecution"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Run all quality gates: cargo fmt --all -- --check && cargo clippy --all-targets --all-features -- -D warnings && cargo test --all-features --workspace && cargo test --no-default-features --workspace && cargo build --all-features. ALL errors and warnings MUST be resolved before proceeding. Fix any issues found."
+  }
+}

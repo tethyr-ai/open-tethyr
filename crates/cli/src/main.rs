@@ -34,8 +34,8 @@ pub enum Commands {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Initialize tracing
-    tracing_subscriber::fmt::init();
+    // Initialize tracing with environment-based configuration
+    open_tethyr::logging::LoggingConfig::init_from_env()?;
 
     let cli = Cli::parse();
 

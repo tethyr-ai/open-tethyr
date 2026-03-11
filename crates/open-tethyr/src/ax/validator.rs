@@ -4,6 +4,7 @@
 
 use super::{Agent, AgentExchangeRecord, Endpoint};
 use std::collections::HashSet;
+use tracing::{debug, warn};
 
 /// AX protocol validation errors
 #[derive(Debug, thiserror::Error)]
@@ -37,8 +38,19 @@ impl AxValidator {
 
     /// Validate an AX record for compliance
     pub fn validate_record(record: &AgentExchangeRecord) -> Result<(), ValidationError> {
+        debug!(
+            record_type = %record.record_type,
+            version = %record.version,
+            agent_name = %record.agent.name,
+            "Validating AX record"
+        );
+
         // Validate record_type is "AX"
         if record.record_type != "AX" {
+            warn!(
+                record_type = %record.record_type,
+                "Invalid record type, expected 'AX'"
+            );
             return Err(ValidationError::InvalidRecordType(
                 record.record_type.clone(),
             ));
@@ -51,6 +63,7 @@ impl AxValidator {
         Self::validate_agent(&record.agent)?;
         Self::validate_endpoints(&record.endpoints)?;
 
+        debug!(agent_name = %record.agent.name, "AX record validation successful");
         Ok(())
     }
 
@@ -74,7 +87,10 @@ impl AxValidator {
     pub fn validate_version(version: &str) -> Result<(), ValidationError> {
         match version {
             "1.0" => Ok(()),
-            _ => Err(ValidationError::UnsupportedVersion(version.to_string())),
+            _ => {
+                warn!(version = %version, "Unsupported AX version");
+                Err(ValidationError::UnsupportedVersion(version.to_string()))
+            }
         }
     }
 
