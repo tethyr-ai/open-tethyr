@@ -7,7 +7,7 @@ TEST_FLAGS := --workspace --all-features
 FMT_FLAGS := --all
 
 .PHONY: all build check test test-verbose test-proptest lint fmt clean \
-        bench serve docker help
+        bench serve docker help ci
 
 # Default target
 all: fmt lint test
@@ -23,22 +23,43 @@ build-release: ## Build all crates (release, optimized)
 check: ## Type-check without building
 	$(CARGO) check $(TEST_FLAGS)
 
-## Test
+## Test Tiers
 
-test: ## Run all tests
+test: ## Run all 145 tests (all features)
 	$(CARGO) test $(TEST_FLAGS)
 
 test-verbose: ## Run all tests with output
 	$(CARGO) test $(TEST_FLAGS) -- --nocapture
 
-test-proptest: ## Run property tests with extended iterations
-	PROPTEST_CASES=1000 $(CARGO) test $(TEST_FLAGS)
-
 test-lib: ## Run only library tests
 	$(CARGO) test -p open-tethyr --all-features
 
-test-cli: ## Run only CLI tests
+test-cli: ## Run only CLI tests (includes binary tests)
 	$(CARGO) test -p open-tethyr-cli
+
+test-http: ## Run HTTP mock tests only
+	$(CARGO) test -p open-tethyr --all-features --test http_mock_tests
+
+test-server: ## Run server route tests only
+	$(CARGO) test -p open-tethyr --all-features --test server_route_tests
+
+test-malformed: ## Run malformed input tests only
+	$(CARGO) test -p open-tethyr --all-features --test malformed_input_tests
+
+test-property: ## Run property tests with extended iterations (1000 cases)
+	PROPTEST_CASES=1000 $(CARGO) test $(TEST_FLAGS)
+
+test-stress: ## Run property tests with high iterations (10000 cases)
+	PROPTEST_CASES=10000 $(CARGO) test $(TEST_FLAGS)
+
+test-no-default: ## Run tests with no default features (client-less build)
+	$(CARGO) test --no-default-features --workspace
+
+## CI (mirrors GitHub Actions pipeline)
+
+ci: fmt-check lint test test-no-default ## Run full CI pipeline locally
+	@echo ""
+	@echo "CI passed: format, lint, all tests, no-default-features tests"
 
 ## Lint & Format
 
