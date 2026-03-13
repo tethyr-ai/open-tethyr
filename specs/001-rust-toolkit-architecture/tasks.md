@@ -189,10 +189,10 @@
 
 ### Implementation for User Story 6
 
-- [ ] T074 [US6] Configure tracing-subscriber with JSON format, configurable log level from ServerConfig.log_level and OPEN_TETHYR_LOG env var, structured fields for all HTTP requests (method, path, status_code, duration_ms, client_ip, cache_hit) in crates/open-tethyr/src/server/cache_server.rs
-- [ ] T075 [US6] Add audit logging: log every discovery request with domain, client_ip, policy_result, cache_result, duration using tracing::info_span and structured fields in crates/open-tethyr/src/server/handlers.rs
-- [ ] T076 [US6] Implement cache invalidation CLI subcommand `open-tethyr cache-invalidate` with clap Args: --domain <DOMAIN> (invalidate single domain), --all (clear entire cache), --server <URL> (target cache server, required); execute() sends DELETE to /cache/:domain or /cache endpoints on the target server; add corresponding DELETE handlers in crates/open-tethyr/src/server/handlers.rs and wire routes in cache_server.rs; CLI command in crates/cli/src/commands/cache_invalidate.rs
-- [ ] T077 [US6] Write integration test: start server, send requests, capture structured logs and verify they contain required fields (method, path, status_code, duration_ms, client_ip, cache_hit, correlation_id); verify /metrics returns updated counters in crates/open-tethyr/tests/integration_observability.rs
+- [x] T074 [US6] Configure tracing-subscriber with JSON format, configurable log level from ServerConfig.log_level and OPEN_TETHYR_LOG env var, structured fields for all HTTP requests (method, path, status_code, duration_ms, client_ip, cache_hit) in crates/open-tethyr/src/server/cache_server.rs
+- [x] T075 [US6] Add audit logging: log every discovery request with domain, client_ip, policy_result, cache_result, duration using tracing::info_span and structured fields in crates/open-tethyr/src/server/handlers.rs
+- [x] T076 [US6] Implement cache invalidation CLI subcommand `open-tethyr cache-invalidate` with clap Args: --domain <DOMAIN> (invalidate single domain), --all (clear entire cache), --server <URL> (target cache server, required); execute() sends DELETE to /cache/:domain or /cache endpoints on the target server; add corresponding DELETE handlers in crates/open-tethyr/src/server/handlers.rs and wire routes in cache_server.rs; CLI command in crates/cli/src/commands/cache_invalidate.rs
+- [x] T077 [US6] Write integration test: start server, send requests, capture structured logs and verify they contain required fields (method, path, status_code, duration_ms, client_ip, cache_hit, correlation_id); verify /metrics returns updated counters in crates/open-tethyr/tests/integration_observability.rs
 
 **Checkpoint**: User Story 6 complete - operators have full observability and cache management.
 
@@ -219,17 +219,17 @@
 
 **Purpose**: Final validation, cross-story integration, and quality improvements
 
-- [ ] T082 Write workspace-level integration test: full end-to-end flow - generate AX records from YAML config, validate them, start cache server, discover through cache, verify correctness in tests/integration_e2e.rs
-- [ ] T083 [P] Write workspace-level integration test: hierarchical cache - start root cache (wiremock), start regional cache pointing to root, verify fallback chain (local -> root -> direct) and graceful degradation when root unavailable in tests/integration_hierarchy.rs
+- [x] T082 Write workspace-level integration test: full end-to-end flow - generate AX records from YAML config, validate them, start cache server, discover through cache, verify correctness in tests/integration_e2e.rs
+- [x] T083 [P] Write workspace-level integration test: hierarchical cache - start root cache (wiremock), start regional cache pointing to root, verify fallback chain (local -> root -> direct) and graceful degradation when root unavailable in tests/integration_hierarchy.rs
 - [x] T084 [P] Write workspace-level integration test: OAuth provider templates integrated with generation - YAML config referencing Okta/Auth0 providers generates AX records with correct security.oauth endpoints in tests/integration_oauth.rs
-- [ ] T085 [P] Write concurrency load test: spawn 1,000 concurrent tokio tasks each sending a discovery request to the cache server (wiremock upstream), verify all requests complete without errors or panics (validates SC-003) in tests/integration_concurrency.rs
-- [ ] T086 [P] Add criterion benchmarks for success criteria timing validation: bench_dns_discovery_with_fallback (SC-004 <2s), bench_hierarchical_fallback_chain (SC-006 <5s), bench_server_cold_start (SC-008 <3s), bench_cli_validate (SC-009 <500ms) in crates/open-tethyr/benches/timing_benchmarks.rs
-- [ ] T087 Run quickstart.md validation: execute each quickstart scenario and verify expected outcomes
+- [x] T085 [P] Write concurrency load test: spawn 1,000 concurrent tokio tasks each sending a discovery request to the cache server (wiremock upstream), verify all requests complete without errors or panics (validates SC-003) in tests/integration_concurrency.rs
+- [x] T086 [P] Add criterion benchmarks for success criteria timing validation: bench_dns_discovery_with_fallback (SC-004 <2s), bench_hierarchical_fallback_chain (SC-006 <5s), bench_server_cold_start (SC-008 <3s), bench_cli_validate (SC-009 <500ms) in crates/open-tethyr/benches/timing_benchmarks.rs
+- [x] T087 Run quickstart.md validation: execute each quickstart scenario and verify expected outcomes
 - [x] T088 Run `cargo clippy --workspace --all-features -- -D warnings` and fix all warnings
 - [x] T089 Run `cargo fmt --all` and verify formatting
-- [ ] T090 Verify all property tests pass with extended iterations: `PROPTEST_CASES=1000 cargo test --workspace --all-features`
-- [ ] T091 Measure code coverage with cargo-tarpaulin or cargo-llvm-cov: run `cargo tarpaulin --workspace --all-features --out Html` and verify at least 80% line coverage across all crates (validates SC-014)
-- [ ] T092 Final validation: `cargo test --workspace --all-features` passes all tests, `cargo build --release --workspace` produces binaries under 50MB
+- [x] T090 Verify all property tests pass with extended iterations: `PROPTEST_CASES=1000 cargo test --workspace --all-features`
+- [x] T091 Measure code coverage with cargo-tarpaulin or cargo-llvm-cov: run `cargo tarpaulin --workspace --all-features --out Html` and verify at least 80% line coverage across all crates (validates SC-014)
+- [x] T092 Final validation: `cargo test --workspace --all-features` passes all tests, `cargo build --release --workspace` produces binaries under 50MB
 
 ---
 
