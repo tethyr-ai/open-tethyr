@@ -70,14 +70,14 @@
 
 ### Tests for User Story 1
 
-- [ ] T032 [P] [US1] Write property test (Property 1): AX record generation correctness - for any valid YAML config, generated document has record_type="AX", version="1.0", valid structure per AX RFC in crates/open-tethyr/tests/property_generation.rs
-- [ ] T033 [P] [US1] Write property test (Property 24): AX version validation and handling - version="1.0" accepted, unsupported versions logged and skipped in crates/open-tethyr/tests/property_version.rs
-- [ ] T034 [P] [US1] Write property test (Property 3): well-known file structure generation - output includes /.well-known/agent-exchange.json path with correct directory structure in crates/open-tethyr/tests/property_wellknown.rs
+- [x] T032 [P] [US1] Write property test (Property 1): AX record generation correctness - for any valid YAML config, generated document has record_type="AX", version="1.0", valid structure per AX RFC in crates/open-tethyr/tests/property_generation.rs
+- [x] T033 [P] [US1] Write property test (Property 24): AX version validation and handling - version="1.0" accepted, unsupported versions logged and skipped in crates/open-tethyr/tests/property_version.rs
+- [x] T034 [P] [US1] Write property test (Property 3): well-known file structure generation - output includes /.well-known/agent-exchange.json path with correct directory structure in crates/open-tethyr/tests/property_wellknown.rs
 
 ### Implementation for User Story 1
 
-- [ ] T035 [US1] Implement GenerateCommand with clap Args: --config (PathBuf, required), --output (PathBuf, required), --validate (bool flag); execute() loads YAML config via ConfigMerger, generates via AxGenerator, optionally validates via AxValidator, writes via FileWriter in crates/cli/src/commands/generate.rs
-- [ ] T036 [US1] Implement basic ValidateCommand with clap Args: positional path to AX JSON file; execute() reads file, parses JSON, runs AxValidator::validate_record() on each record, reports errors to stderr with field paths in crates/cli/src/commands/validate.rs (Note: provides minimal validate for --validate flag in generate; US2 enhances this with detailed reporting)
+- [x] T035 [US1] Implement GenerateCommand with clap Args: --config (PathBuf, required), --output (PathBuf, required), --validate (bool flag); execute() loads YAML config via ConfigMerger, generates via AxGenerator, optionally validates via AxValidator, writes via FileWriter in crates/cli/src/commands/generate.rs
+- [x] T036 [US1] Implement basic ValidateCommand with clap Args: positional path to AX JSON file; execute() reads file, parses JSON, runs AxValidator::validate_record() on each record, reports errors to stderr with field paths in crates/cli/src/commands/validate.rs (Note: provides minimal validate for --validate flag in generate; US2 enhances this with detailed reporting)
 - [ ] T037 [US1] Write CLI integration test: generate command produces valid AX JSON from sample YAML config, validate command passes on generated output, validate command fails on intentionally invalid input in crates/cli/tests/test_generate_validate.rs
 
 **Checkpoint**: User Story 1 complete - administrators can generate and validate AX records via CLI.
@@ -92,12 +92,12 @@
 
 ### Tests for User Story 2
 
-- [ ] T038 [P] [US2] Write property test (Property 25): auth method validation - auth methods from {OIDC, OAuth2, mTLS, JWT, API_KEY} accepted, others rejected in crates/open-tethyr/tests/property_auth_validation.rs
+- [x] T038 [P] [US2] Write property test (Property 25): auth method validation - auth methods from {OIDC, OAuth2, mTLS, JWT, API_KEY} accepted, others rejected in crates/open-tethyr/tests/property_auth_validation.rs
 
 ### Implementation for User Story 2
 
-- [ ] T039 [US2] Enhance AxValidator to produce detailed ValidationReport with per-field error paths, severity levels (error vs warning), and human-readable messages for: missing required fields, invalid record_type, unsupported version (warning), invalid auth methods, empty endpoints in crates/open-tethyr/src/ax/validator.rs
-- [ ] T040 [US2] Enhance ValidateCommand output formatting: summary line for valid records, itemized error list for invalid records with field path and description, exit code 0 for valid / 3 for invalid in crates/cli/src/commands/validate.rs
+- [x] T039 [US2] Enhance AxValidator to produce detailed ValidationReport with per-field error paths, severity levels (error vs warning), and human-readable messages for: missing required fields, invalid record_type, unsupported version (warning), invalid auth methods, empty endpoints in crates/open-tethyr/src/ax/validator.rs
+- [x] T040 [US2] Enhance ValidateCommand output formatting: summary line for valid records, itemized error list for invalid records with field path and description, exit code 0 for valid / 3 for invalid in crates/cli/src/commands/validate.rs
 - [ ] T041 [US2] Write integration test: validate command with valid AX record exits 0, with missing agent.name exits 3, with version "2.0" shows warning, with auth ["INVALID"] reports error in crates/cli/tests/test_validate_detailed.rs
 
 **Checkpoint**: User Story 2 complete - integrators can validate any AX record with detailed error reporting.
