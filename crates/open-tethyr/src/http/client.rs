@@ -41,20 +41,23 @@ impl AxHttpClient {
     }
 
     /// Fetch AX record from a cache server
-    pub async fn fetch_from_cache(&self, cache_url: &str, domain: &str) -> Result<AgentExchangeDocument, HttpError> {
+    pub async fn fetch_from_cache(
+        &self,
+        cache_url: &str,
+        domain: &str,
+    ) -> Result<AgentExchangeDocument, HttpError> {
         let url = format!("{}/discover/{}", cache_url.trim_end_matches('/'), domain);
         self.fetch_from_url(&url).await
     }
 
     async fn fetch_from_url(&self, url: &str) -> Result<AgentExchangeDocument, HttpError> {
-        let response = self.client.get(url).send().await
-            .map_err(|e| {
-                if e.is_timeout() {
-                    HttpError::Timeout(self.timeout.as_secs())
-                } else {
-                    HttpError::RequestFailed(e.to_string())
-                }
-            })?;
+        let response = self.client.get(url).send().await.map_err(|e| {
+            if e.is_timeout() {
+                HttpError::Timeout(self.timeout.as_secs())
+            } else {
+                HttpError::RequestFailed(e.to_string())
+            }
+        })?;
 
         if !response.status().is_success() {
             return Err(HttpError::InvalidResponse(
@@ -63,7 +66,9 @@ impl AxHttpClient {
             ));
         }
 
-        response.json::<AgentExchangeDocument>().await
+        response
+            .json::<AgentExchangeDocument>()
+            .await
             .map_err(|e| HttpError::InvalidResponse(url.to_string(), e.to_string()))
     }
 }

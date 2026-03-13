@@ -22,10 +22,16 @@ impl ConfigMerger {
             } else {
                 agent.auth.clone()
             },
-            capabilities: agent.capabilities.clone().or_else(|| defaults.capabilities.clone()),
+            capabilities: agent
+                .capabilities
+                .clone()
+                .or_else(|| defaults.capabilities.clone()),
             limits: agent.limits.clone().or_else(|| defaults.limits.clone()),
             security: agent.security.clone(),
-            extensions: agent.extensions.clone().or_else(|| defaults.extensions.clone()),
+            extensions: agent
+                .extensions
+                .clone()
+                .or_else(|| defaults.extensions.clone()),
             oauth_provider: agent.oauth_provider.clone(),
             oauth_domain: agent.oauth_domain.clone(),
         }
@@ -33,7 +39,9 @@ impl ConfigMerger {
 
     /// Merge all agents in config with defaults
     pub fn merge_all(config: &AgentConfig) -> Vec<AgentDefinition> {
-        config.agents.iter()
+        config
+            .agents
+            .iter()
             .map(|agent| Self::merge_agent(&config.defaults, agent))
             .collect()
     }

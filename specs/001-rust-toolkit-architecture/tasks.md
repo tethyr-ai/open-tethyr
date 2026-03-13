@@ -154,8 +154,8 @@
 
 ### Tests for User Story 4
 
-- [ ] T068 [P] [US4] Write property test (Property 17): DNS cache discovery routing - cache found via DNS -> requests go through cache; no cache -> direct discovery in crates/open-tethyr/tests/property_client_routing.rs
-- [ ] T069 [P] [US4] Write property test (Property 19): DNS discovery error resilience - DNS failures don't propagate, client falls back to direct discovery in crates/open-tethyr/tests/property_dns_resilience.rs
+- [x] T068 [P] [US4] Write property test (Property 17): DNS cache discovery routing - cache found via DNS -> requests go through cache; no cache -> direct discovery in crates/open-tethyr/tests/property_client_routing.rs
+- [x] T069 [P] [US4] Write property test (Property 19): DNS discovery error resilience - DNS failures don't propagate, client falls back to direct discovery in crates/open-tethyr/tests/property_dns_resilience.rs
 
 ### Implementation for User Story 4
 
@@ -206,10 +206,10 @@
 
 ### Implementation for User Story 7
 
-- [ ] T078 [P] [US7] Create CI workflow: cargo fmt --check, cargo clippy --workspace --all-features, cargo test --workspace --all-features in .github/workflows/ci.yml
-- [ ] T079 [P] [US7] Create release workflow: cross-compile for x86_64-unknown-linux-musl (static), x86_64-apple-darwin, x86_64-pc-windows-msvc; upload binaries as GitHub release assets in .github/workflows/release.yml
-- [ ] T080 [P] [US7] Create Docker workflow: multi-stage Dockerfile (builder with musl -> minimal runtime), push to ghcr.io in .github/workflows/docker.yml and docker/Dockerfile
-- [ ] T081 [US7] Create performance benchmarks with criterion: bench_cache_put, bench_cache_get, bench_cache_evict, bench_ax_parse, bench_ax_validate, bench_config_merge in crates/open-tethyr/benches/benchmarks.rs
+- [x] T078 [P] [US7] Create CI workflow: cargo fmt --check, cargo clippy --workspace --all-features, cargo test --workspace --all-features in .github/workflows/ci.yml
+- [x] T079 [P] [US7] Create release workflow: cross-compile for x86_64-unknown-linux-musl (static), x86_64-apple-darwin, x86_64-pc-windows-msvc; upload binaries as GitHub release assets in .github/workflows/release.yml
+- [x] T080 [P] [US7] Create Docker workflow: multi-stage Dockerfile (builder with musl -> minimal runtime), push to ghcr.io in .github/workflows/docker.yml and docker/Dockerfile
+- [x] T081 [US7] Create performance benchmarks with criterion: bench_cache_put, bench_cache_get, bench_cache_evict, bench_ax_parse, bench_ax_validate, bench_config_merge in crates/open-tethyr/benches/benchmarks.rs
 
 **Checkpoint**: User Story 7 complete - CI/CD pipeline produces cross-platform binaries and Docker images.
 
@@ -225,8 +225,8 @@
 - [ ] T085 [P] Write concurrency load test: spawn 1,000 concurrent tokio tasks each sending a discovery request to the cache server (wiremock upstream), verify all requests complete without errors or panics (validates SC-003) in tests/integration_concurrency.rs
 - [ ] T086 [P] Add criterion benchmarks for success criteria timing validation: bench_dns_discovery_with_fallback (SC-004 <2s), bench_hierarchical_fallback_chain (SC-006 <5s), bench_server_cold_start (SC-008 <3s), bench_cli_validate (SC-009 <500ms) in crates/open-tethyr/benches/timing_benchmarks.rs
 - [ ] T087 Run quickstart.md validation: execute each quickstart scenario and verify expected outcomes
-- [ ] T088 Run `cargo clippy --workspace --all-features -- -D warnings` and fix all warnings
-- [ ] T089 Run `cargo fmt --all` and verify formatting
+- [x] T088 Run `cargo clippy --workspace --all-features -- -D warnings` and fix all warnings
+- [x] T089 Run `cargo fmt --all` and verify formatting
 - [ ] T090 Verify all property tests pass with extended iterations: `PROPTEST_CASES=1000 cargo test --workspace --all-features`
 - [ ] T091 Measure code coverage with cargo-tarpaulin or cargo-llvm-cov: run `cargo tarpaulin --workspace --all-features --out Html` and verify at least 80% line coverage across all crates (validates SC-014)
 - [ ] T092 Final validation: `cargo test --workspace --all-features` passes all tests, `cargo build --release --workspace` produces binaries under 50MB

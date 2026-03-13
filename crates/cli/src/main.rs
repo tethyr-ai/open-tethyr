@@ -7,8 +7,8 @@ use clap::{Parser, Subcommand};
 mod commands;
 
 use commands::{
-    cache_invalidate::CacheInvalidateCommand, discover::DiscoverCommand,
-    generate::GenerateCommand, serve::ServeCommand, validate::ValidateCommand,
+    cache_invalidate::CacheInvalidateCommand, discover::DiscoverCommand, generate::GenerateCommand,
+    serve::ServeCommand, validate::ValidateCommand,
 };
 
 #[derive(Parser)]

@@ -55,8 +55,11 @@ impl ConfigValidator {
         ttl.parse::<u64>()
             .map_err(|_| ConfigError::InvalidTtl(ttl.into()))
             .and_then(|v| {
-                if v == 0 { Err(ConfigError::InvalidTtl("must be positive".into())) }
-                else { Ok(v) }
+                if v == 0 {
+                    Err(ConfigError::InvalidTtl("must be positive".into()))
+                } else {
+                    Ok(v)
+                }
             })
     }
 }

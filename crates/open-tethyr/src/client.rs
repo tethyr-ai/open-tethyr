@@ -45,10 +45,17 @@ impl OpenTethyr {
     }
 
     /// Discover agents from target domain (cache-first, then direct)
-    pub async fn discover(&self, target_domain: &str) -> Result<AgentExchangeDocument, ClientError> {
+    pub async fn discover(
+        &self,
+        target_domain: &str,
+    ) -> Result<AgentExchangeDocument, ClientError> {
         // Try cache first
         if let Some(ref cache_url) = self.cache_url {
-            match self.http_client.fetch_from_cache(cache_url, target_domain).await {
+            match self
+                .http_client
+                .fetch_from_cache(cache_url, target_domain)
+                .await
+            {
                 Ok(doc) => return Ok(doc),
                 Err(e) => {
                     tracing::warn!("Cache fetch failed, falling back to direct: {}", e);
@@ -57,7 +64,9 @@ impl OpenTethyr {
         }
 
         // Direct fetch
-        self.http_client.fetch_ax_record(target_domain).await
+        self.http_client
+            .fetch_ax_record(target_domain)
+            .await
             .map_err(|e| ClientError::DiscoveryFailed(target_domain.into(), e.to_string()))
     }
 
@@ -67,7 +76,9 @@ impl OpenTethyr {
         target_domain: &str,
         cache_url: &str,
     ) -> Result<AgentExchangeDocument, ClientError> {
-        self.http_client.fetch_from_cache(cache_url, target_domain).await
+        self.http_client
+            .fetch_from_cache(cache_url, target_domain)
+            .await
             .map_err(|e| ClientError::DiscoveryFailed(target_domain.into(), e.to_string()))
     }
 }

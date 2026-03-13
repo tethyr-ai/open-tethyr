@@ -22,8 +22,12 @@ fn generates_valid_ax_document() {
                 content_type: None,
             }],
             auth: vec![],
-            capabilities: None, limits: None, security: None, extensions: None,
-            oauth_provider: None, oauth_domain: None,
+            capabilities: None,
+            limits: None,
+            security: None,
+            extensions: None,
+            oauth_provider: None,
+            oauth_domain: None,
         }],
         server: None,
     };
@@ -52,7 +56,10 @@ fn generates_with_oauth_provider() {
                 content_type: None,
             }],
             auth: vec!["OAuth2".into()],
-            capabilities: None, limits: None, security: None, extensions: None,
+            capabilities: None,
+            limits: None,
+            security: None,
+            extensions: None,
             oauth_provider: Some("okta".into()),
             oauth_domain: Some("dev-123.okta.com".into()),
         }],
@@ -63,5 +70,9 @@ fn generates_with_oauth_provider() {
     let security = doc.records[0].security.as_ref().unwrap();
     let oauth = security.oauth.as_ref().unwrap();
     assert!(oauth.issuer.as_ref().unwrap().starts_with("https://"));
-    assert!(oauth.token_endpoint.as_ref().unwrap().contains("/oauth2/token"));
+    assert!(oauth
+        .token_endpoint
+        .as_ref()
+        .unwrap()
+        .contains("/oauth2/token"));
 }

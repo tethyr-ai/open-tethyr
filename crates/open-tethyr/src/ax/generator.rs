@@ -37,28 +37,34 @@ impl AxGenerator {
         agent_def: &AgentDefinition,
         registry: &ProviderRegistry,
     ) -> Result<AgentExchangeRecord, AxError> {
-        let endpoints: Vec<Endpoint> = agent_def.endpoints.iter().map(|ep| {
-            let protocol = match ep.protocol.to_lowercase().as_str() {
-                "rest" => Protocol::Rest,
-                "graphql" => Protocol::GraphQL,
-                "mcp" => Protocol::MCP,
-                "a2a" => Protocol::A2A,
-                other => Protocol::Custom(other.to_string()),
-            };
-            let auth = if ep.auth.is_empty() {
-                agent_def.auth.clone()
-            } else {
-                ep.auth.clone()
-            };
-            Endpoint {
-                protocol,
-                url: ep.url.clone(),
-                auth,
-                content_type: ep.content_type.clone(),
-            }
-        }).collect();
+        let endpoints: Vec<Endpoint> = agent_def
+            .endpoints
+            .iter()
+            .map(|ep| {
+                let protocol = match ep.protocol.to_lowercase().as_str() {
+                    "rest" => Protocol::Rest,
+                    "graphql" => Protocol::GraphQL,
+                    "mcp" => Protocol::MCP,
+                    "a2a" => Protocol::A2A,
+                    other => Protocol::Custom(other.to_string()),
+                };
+                let auth = if ep.auth.is_empty() {
+                    agent_def.auth.clone()
+                } else {
+                    ep.auth.clone()
+                };
+                Endpoint {
+                    protocol,
+                    url: ep.url.clone(),
+                    auth,
+                    content_type: ep.content_type.clone(),
+                }
+            })
+            .collect();
 
-        let security = if let (Some(provider), Some(domain)) = (&agent_def.oauth_provider, &agent_def.oauth_domain) {
+        let security = if let (Some(provider), Some(domain)) =
+            (&agent_def.oauth_provider, &agent_def.oauth_domain)
+        {
             match registry.generate_oauth_config(provider, domain) {
                 Ok(oauth) => Some(Security {
                     oauth: Some(oauth),

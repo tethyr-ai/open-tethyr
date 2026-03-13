@@ -1,13 +1,15 @@
 //! Auth0 OAuth Provider
 
+use super::provider::OAuthProvider;
 use crate::ax::OAuthEndpoints;
 use crate::error::OAuthError;
-use super::provider::OAuthProvider;
 
 pub struct Auth0Provider;
 
 impl OAuthProvider for Auth0Provider {
-    fn provider_name(&self) -> &str { "auth0" }
+    fn provider_name(&self) -> &str {
+        "auth0"
+    }
 
     fn generate_endpoints(&self, domain: &str) -> Result<OAuthEndpoints, OAuthError> {
         Ok(OAuthEndpoints {

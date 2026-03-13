@@ -30,11 +30,17 @@ impl ValidationReport {
     }
 
     pub fn errors(&self) -> Vec<&ValidationItem> {
-        self.items.iter().filter(|i| i.severity == Severity::Error).collect()
+        self.items
+            .iter()
+            .filter(|i| i.severity == Severity::Error)
+            .collect()
     }
 
     pub fn warnings(&self) -> Vec<&ValidationItem> {
-        self.items.iter().filter(|i| i.severity == Severity::Warning).collect()
+        self.items
+            .iter()
+            .filter(|i| i.severity == Severity::Warning)
+            .collect()
     }
 }
 

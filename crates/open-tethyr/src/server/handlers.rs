@@ -18,10 +18,14 @@ pub async fn handle_discover(
 
     // Check policy
     if let Err(e) = state.policy.check_discovery_allowed(&domain) {
-        return (StatusCode::FORBIDDEN, Json(json!({
-            "error": e.to_string(),
-            "timestamp": chrono_now(),
-        }))).into_response();
+        return (
+            StatusCode::FORBIDDEN,
+            Json(json!({
+                "error": e.to_string(),
+                "timestamp": chrono_now(),
+            })),
+        )
+            .into_response();
     }
 
     // Discover via coordinator
@@ -32,10 +36,14 @@ pub async fn handle_discover(
         }
         Err(e) => {
             state.stats.record_miss();
-            (StatusCode::BAD_GATEWAY, Json(json!({
-                "error": e.to_string(),
-                "timestamp": chrono_now(),
-            }))).into_response()
+            (
+                StatusCode::BAD_GATEWAY,
+                Json(json!({
+                    "error": e.to_string(),
+                    "timestamp": chrono_now(),
+                })),
+            )
+                .into_response()
         }
     }
 }
@@ -46,9 +54,7 @@ pub async fn handle_health() -> impl IntoResponse {
 }
 
 /// Metrics handler (Prometheus text format)
-pub async fn handle_metrics(
-    State(state): State<Arc<AppState>>,
-) -> impl IntoResponse {
+pub async fn handle_metrics(State(state): State<Arc<AppState>>) -> impl IntoResponse {
     let stats = &state.stats;
     let body = format!(
         "# HELP cache_hits_total Total cache hits\n# TYPE cache_hits_total counter\ncache_hits_total {}\n\
@@ -56,13 +62,20 @@ pub async fn handle_metrics(
          # HELP cache_evictions_total Total cache evictions\n# TYPE cache_evictions_total counter\ncache_evictions_total {}\n",
         stats.hits(), stats.misses(), stats.evictions(),
     );
-    (StatusCode::OK, [("content-type", "text/plain; version=0.0.4")], body)
+    (
+        StatusCode::OK,
+        [("content-type", "text/plain; version=0.0.4")],
+        body,
+    )
 }
 
 fn chrono_now() -> String {
     // Simple ISO timestamp without chrono dependency
-    format!("{:?}", std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .unwrap_or_default()
-        .as_secs())
+    format!(
+        "{:?}",
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_secs()
+    )
 }

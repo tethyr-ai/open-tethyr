@@ -1,12 +1,12 @@
 //! Server Middleware
 
-use axum::http::{Request, Response, HeaderValue};
 use axum::body::Body;
+use axum::http::{HeaderValue, Request, Response};
+use std::future::Future;
+use std::pin::Pin;
 use std::task::{Context, Poll};
 use tower::{Layer, Service};
 use uuid::Uuid;
-use std::future::Future;
-use std::pin::Pin;
 
 /// Correlation ID layer
 #[derive(Clone)]
@@ -44,7 +44,8 @@ where
             let mut response = svc.call(req).await?;
             response.headers_mut().insert(
                 "X-Correlation-Id",
-                HeaderValue::from_str(&correlation_id).unwrap_or_else(|_| HeaderValue::from_static("unknown")),
+                HeaderValue::from_str(&correlation_id)
+                    .unwrap_or_else(|_| HeaderValue::from_static("unknown")),
             );
             Ok(response)
         })

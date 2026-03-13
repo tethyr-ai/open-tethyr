@@ -1,8 +1,8 @@
 //! DNS Discovery Implementation
 
 use crate::error::DnsError;
-use hickory_resolver::TokioAsyncResolver;
 use hickory_resolver::config::{ResolverConfig, ResolverOpts};
+use hickory_resolver::TokioAsyncResolver;
 
 /// DNS discovery for AX cache endpoints
 pub struct DnsDiscovery {
@@ -12,7 +12,8 @@ pub struct DnsDiscovery {
 impl DnsDiscovery {
     /// Create a new DNS discovery instance
     pub fn new() -> Result<Self, DnsError> {
-        let resolver = TokioAsyncResolver::tokio(ResolverConfig::default(), ResolverOpts::default());
+        let resolver =
+            TokioAsyncResolver::tokio(ResolverConfig::default(), ResolverOpts::default());
         Ok(Self { resolver })
     }
 

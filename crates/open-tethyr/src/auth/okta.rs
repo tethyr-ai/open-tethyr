@@ -1,13 +1,15 @@
 //! Okta OAuth Provider
 
+use super::provider::OAuthProvider;
 use crate::ax::OAuthEndpoints;
 use crate::error::OAuthError;
-use super::provider::OAuthProvider;
 
 pub struct OktaProvider;
 
 impl OAuthProvider for OktaProvider {
-    fn provider_name(&self) -> &str { "okta" }
+    fn provider_name(&self) -> &str {
+        "okta"
+    }
 
     fn generate_endpoints(&self, domain: &str) -> Result<OAuthEndpoints, OAuthError> {
         Ok(OAuthEndpoints {

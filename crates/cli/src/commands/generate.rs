@@ -41,8 +41,12 @@ impl GenerateCommand {
         }
 
         // Write to well-known structure
-        let result = open_tethyr::ax::AxGenerator::generate_well_known_structure(&doc, &self.output)?;
-        println!("Generated AX records at {}", result.ax_record_path.display());
+        let result =
+            open_tethyr::ax::AxGenerator::generate_well_known_structure(&doc, &self.output)?;
+        println!(
+            "Generated AX records at {}",
+            result.ax_record_path.display()
+        );
         println!("  Records: {}", doc.records.len());
         for record in &doc.records {
             println!("  - {} ({})", record.agent.name, record.agent.provider);

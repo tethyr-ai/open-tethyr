@@ -27,8 +27,13 @@ impl ProviderRegistry {
         self.providers.push(provider);
     }
 
-    pub fn generate_oauth_config(&self, provider_name: &str, domain: &str) -> Result<OAuthEndpoints, OAuthError> {
-        self.providers.iter()
+    pub fn generate_oauth_config(
+        &self,
+        provider_name: &str,
+        domain: &str,
+    ) -> Result<OAuthEndpoints, OAuthError> {
+        self.providers
+            .iter()
             .find(|p| p.provider_name() == provider_name)
             .ok_or_else(|| OAuthError::UnknownProvider(provider_name.into()))
             .and_then(|p| p.generate_endpoints(domain))
@@ -36,5 +41,7 @@ impl ProviderRegistry {
 }
 
 impl Default for ProviderRegistry {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self {
+        Self::new()
+    }
 }

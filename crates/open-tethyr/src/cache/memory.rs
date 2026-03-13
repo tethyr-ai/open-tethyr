@@ -54,7 +54,9 @@ impl MemoryCache {
         if entry.no_cache {
             return Ok(()); // Respect Cache-Control: no-cache
         }
-        let mut cache = self.cache.write()
+        let mut cache = self
+            .cache
+            .write()
             .map_err(|e| CacheError::OperationFailed(e.to_string()))?;
         cache.put(domain, entry);
         Ok(())

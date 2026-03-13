@@ -3,7 +3,12 @@ use open_tethyr::cache::memory::{CacheEntry, MemoryCache};
 use std::time::{Duration, Instant};
 
 fn entry(data: &str) -> CacheEntry {
-    CacheEntry { data: data.into(), created_at: Instant::now(), ttl: Duration::from_secs(3600), no_cache: false }
+    CacheEntry {
+        data: data.into(),
+        created_at: Instant::now(),
+        ttl: Duration::from_secs(3600),
+        no_cache: false,
+    }
 }
 
 #[test]

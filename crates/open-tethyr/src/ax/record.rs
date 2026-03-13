@@ -1,7 +1,7 @@
 //! AX Record Data Structures
 
-use serde::{Deserialize, Serialize};
 use super::types::{Capabilities, Endpoint, Limits, Schema, Security};
+use serde::{Deserialize, Serialize};
 
 /// AX record data structure following AX 1.0 specification
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -24,8 +24,12 @@ pub struct AgentExchangeRecord {
     pub extensions: Option<serde_json::Value>,
 }
 
-fn default_record_type() -> String { "AX".to_string() }
-fn default_version() -> String { "1.0".to_string() }
+fn default_record_type() -> String {
+    "AX".to_string()
+}
+fn default_version() -> String {
+    "1.0".to_string()
+}
 
 /// Agent definition
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]

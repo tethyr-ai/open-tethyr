@@ -11,7 +11,11 @@ pub struct PolicyEngine {
 
 impl PolicyEngine {
     pub fn new(domain_locking: bool, home_domain: Option<String>, allowlist: Vec<String>) -> Self {
-        Self { domain_locking, home_domain, allowlist }
+        Self {
+            domain_locking,
+            home_domain,
+            allowlist,
+        }
     }
 
     /// Check if discovery is allowed for a domain
@@ -33,7 +37,8 @@ impl PolicyEngine {
         }
 
         Err(ServerError::PolicyViolation(format!(
-            "Domain '{}' is not allowed by policy", domain
+            "Domain '{}' is not allowed by policy",
+            domain
         )))
     }
 }

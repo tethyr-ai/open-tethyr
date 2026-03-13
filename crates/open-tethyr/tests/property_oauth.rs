@@ -10,8 +10,14 @@ fn okta_generates_valid_endpoints() {
     assert!(eps.authorization_endpoint.unwrap().starts_with("https://"));
     assert!(eps.token_endpoint.unwrap().contains("/oauth2/token"));
     assert!(eps.jwks_uri.unwrap().contains("/oauth2/v1/keys"));
-    assert!(eps.userinfo_endpoint.unwrap().contains("/oauth2/v1/userinfo"));
-    assert!(eps.revocation_endpoint.unwrap().contains("/oauth2/v1/revoke"));
+    assert!(eps
+        .userinfo_endpoint
+        .unwrap()
+        .contains("/oauth2/v1/userinfo"));
+    assert!(eps
+        .revocation_endpoint
+        .unwrap()
+        .contains("/oauth2/v1/revoke"));
 }
 
 #[test]
@@ -35,8 +41,14 @@ fn generic_generates_valid_endpoints() {
 #[test]
 fn registry_finds_providers() {
     let registry = ProviderRegistry::new();
-    assert!(registry.generate_oauth_config("okta", "test.okta.com").is_ok());
-    assert!(registry.generate_oauth_config("auth0", "test.auth0.com").is_ok());
-    assert!(registry.generate_oauth_config("generic", "auth.example.com").is_ok());
+    assert!(registry
+        .generate_oauth_config("okta", "test.okta.com")
+        .is_ok());
+    assert!(registry
+        .generate_oauth_config("auth0", "test.auth0.com")
+        .is_ok());
+    assert!(registry
+        .generate_oauth_config("generic", "auth.example.com")
+        .is_ok());
     assert!(registry.generate_oauth_config("unknown", "x.com").is_err());
 }

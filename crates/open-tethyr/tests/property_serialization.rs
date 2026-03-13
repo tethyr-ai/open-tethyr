@@ -13,7 +13,11 @@ fn arb_protocol() -> impl Strategy<Value = Protocol> {
 }
 
 fn arb_endpoint() -> impl Strategy<Value = Endpoint> {
-    (arb_protocol(), "[a-z]{3,10}", prop::collection::vec("[A-Z_]{2,6}", 1..3))
+    (
+        arb_protocol(),
+        "[a-z]{3,10}",
+        prop::collection::vec("[A-Z_]{2,6}", 1..3),
+    )
         .prop_map(|(protocol, url, auth)| Endpoint {
             protocol,
             url: format!("https://{}.example.com/api", url),
@@ -23,13 +27,16 @@ fn arb_endpoint() -> impl Strategy<Value = Endpoint> {
 }
 
 fn arb_agent() -> impl Strategy<Value = Agent> {
-    ("[a-z]{3,12}", "[a-z ]{5,20}", "[a-z]{3,10}")
-        .prop_map(|(name, desc, provider)| Agent { name, description: desc, provider })
+    ("[a-z]{3,12}", "[a-z ]{5,20}", "[a-z]{3,10}").prop_map(|(name, desc, provider)| Agent {
+        name,
+        description: desc,
+        provider,
+    })
 }
 
 fn arb_record() -> impl Strategy<Value = AgentExchangeRecord> {
-    (arb_agent(), prop::collection::vec(arb_endpoint(), 1..4))
-        .prop_map(|(agent, endpoints)| AgentExchangeRecord {
+    (arb_agent(), prop::collection::vec(arb_endpoint(), 1..4)).prop_map(|(agent, endpoints)| {
+        AgentExchangeRecord {
             record_type: "AX".to_string(),
             version: "1.0".to_string(),
             agent,
@@ -39,7 +46,8 @@ fn arb_record() -> impl Strategy<Value = AgentExchangeRecord> {
             limits: None,
             security: None,
             extensions: None,
-        })
+        }
+    })
 }
 
 proptest! {

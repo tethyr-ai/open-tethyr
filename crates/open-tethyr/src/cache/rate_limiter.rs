@@ -15,7 +15,12 @@ pub struct TokenBucket {
 
 impl TokenBucket {
     pub fn new(capacity: f64, refill_rate: f64) -> Self {
-        Self { tokens: capacity, capacity, refill_rate, last_refill: Instant::now() }
+        Self {
+            tokens: capacity,
+            capacity,
+            refill_rate,
+            last_refill: Instant::now(),
+        }
     }
 
     pub fn consume(&mut self) -> bool {
@@ -58,7 +63,8 @@ impl RateLimiter {
             Ok(b) => b,
             Err(_) => return false,
         };
-        let bucket = buckets.entry(client_ip)
+        let bucket = buckets
+            .entry(client_ip)
             .or_insert_with(|| TokenBucket::new(self.capacity, self.refill_rate));
         bucket.consume()
     }

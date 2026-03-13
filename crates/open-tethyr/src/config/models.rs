@@ -83,9 +83,15 @@ pub struct ServerConfig {
     pub log_level: String,
 }
 
-fn default_domain() -> String { "localhost".to_string() }
-fn default_port() -> u16 { 8080 }
-fn default_log_level() -> String { "info".to_string() }
+fn default_domain() -> String {
+    "localhost".to_string()
+}
+fn default_port() -> u16 {
+    8080
+}
+fn default_log_level() -> String {
+    "info".to_string()
+}
 
 /// Cache configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -100,10 +106,18 @@ pub struct CacheConfig {
     pub enable_lru: bool,
 }
 
-fn default_max_entries() -> usize { 10_000 }
-fn default_ttl() -> u64 { 3600 }
-fn default_cleanup_interval() -> u64 { 300 }
-fn default_enable_lru() -> bool { true }
+fn default_max_entries() -> usize {
+    10_000
+}
+fn default_ttl() -> u64 {
+    3600
+}
+fn default_cleanup_interval() -> u64 {
+    300
+}
+fn default_enable_lru() -> bool {
+    true
+}
 
 impl Default for CacheConfig {
     fn default() -> Self {
@@ -136,8 +150,12 @@ pub struct RateLimitConfig {
     pub requests_per_hour: u32,
 }
 
-fn default_rpm() -> u32 { 60 }
-fn default_rph() -> u32 { 1000 }
+fn default_rpm() -> u32 {
+    60
+}
+fn default_rph() -> u32 {
+    1000
+}
 
 impl Default for RateLimitConfig {
     fn default() -> Self {

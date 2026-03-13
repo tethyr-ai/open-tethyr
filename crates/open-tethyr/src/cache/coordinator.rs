@@ -22,12 +22,14 @@ impl CacheCoordinator {
         // Detect circular dependencies (simple self-reference check)
         if let Some(ref url) = root_cache_url {
             if url.is_empty() {
-                return Err(CacheError::CircularDependency("Empty root cache URL".into()));
+                return Err(CacheError::CircularDependency(
+                    "Empty root cache URL".into(),
+                ));
             }
         }
 
-        let http_client = AxHttpClient::new(Some(30))
-            .map_err(|e| CacheError::OperationFailed(e.to_string()))?;
+        let http_client =
+            AxHttpClient::new(Some(30)).map_err(|e| CacheError::OperationFailed(e.to_string()))?;
 
         Ok(Self {
             local_cache: MemoryCache::new(max_entries),
@@ -51,31 +53,44 @@ impl CacheCoordinator {
                 Ok(doc) => {
                     let json = serde_json::to_string(&doc)
                         .map_err(|e| CacheError::OperationFailed(e.to_string()))?;
-                    let _ = self.local_cache.put(domain.to_string(), CacheEntry {
-                        data: json.clone(),
-                        created_at: Instant::now(),
-                        ttl: self.default_ttl,
-                        no_cache: false,
-                    });
+                    let _ = self.local_cache.put(
+                        domain.to_string(),
+                        CacheEntry {
+                            data: json.clone(),
+                            created_at: Instant::now(),
+                            ttl: self.default_ttl,
+                            no_cache: false,
+                        },
+                    );
                     return Ok(json);
                 }
                 Err(e) => {
-                    tracing::warn!("Root cache fetch failed for {}: {}, falling back to direct", domain, e);
+                    tracing::warn!(
+                        "Root cache fetch failed for {}: {}, falling back to direct",
+                        domain,
+                        e
+                    );
                 }
             }
         }
 
         // 3. Direct fetch
-        let doc = self.http_client.fetch_ax_record(domain).await
+        let doc = self
+            .http_client
+            .fetch_ax_record(domain)
+            .await
             .map_err(|e| CacheError::NotFound(format!("{}: {}", domain, e)))?;
-        let json = serde_json::to_string(&doc)
-            .map_err(|e| CacheError::OperationFailed(e.to_string()))?;
-        let _ = self.local_cache.put(domain.to_string(), CacheEntry {
-            data: json.clone(),
-            created_at: Instant::now(),
-            ttl: self.default_ttl,
-            no_cache: false,
-        });
+        let json =
+            serde_json::to_string(&doc).map_err(|e| CacheError::OperationFailed(e.to_string()))?;
+        let _ = self.local_cache.put(
+            domain.to_string(),
+            CacheEntry {
+                data: json.clone(),
+                created_at: Instant::now(),
+                ttl: self.default_ttl,
+                no_cache: false,
+            },
+        );
         Ok(json)
     }
 

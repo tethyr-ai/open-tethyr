@@ -15,7 +15,10 @@ pub struct FileWriter;
 
 impl FileWriter {
     /// Write AX document to the well-known file structure
-    pub fn write_structure(doc: &AgentExchangeDocument, output_dir: &Path) -> Result<WellKnownFiles, AxError> {
+    pub fn write_structure(
+        doc: &AgentExchangeDocument,
+        output_dir: &Path,
+    ) -> Result<WellKnownFiles, AxError> {
         let well_known_dir = output_dir.join(".well-known");
         std::fs::create_dir_all(&well_known_dir)
             .map_err(|e| AxError::FileWriteFailed(e.to_string()))?;
@@ -33,8 +36,7 @@ impl FileWriter {
     pub fn write_ax_record(doc: &AgentExchangeDocument, path: &Path) -> Result<(), AxError> {
         let json = serde_json::to_string_pretty(doc)
             .map_err(|e| AxError::GenerationFailed(e.to_string()))?;
-        std::fs::write(path, json)
-            .map_err(|e| AxError::FileWriteFailed(e.to_string()))?;
+        std::fs::write(path, json).map_err(|e| AxError::FileWriteFailed(e.to_string()))?;
         Ok(())
     }
 }

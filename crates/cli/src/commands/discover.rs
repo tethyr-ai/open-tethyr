@@ -44,10 +44,16 @@ impl DiscoverCommand {
             if doc.records.is_empty() {
                 println!("No agents found for domain: {}", self.domain);
             } else {
-                println!("Discovered {} agent(s) for {}:", doc.records.len(), self.domain);
+                println!(
+                    "Discovered {} agent(s) for {}:",
+                    doc.records.len(),
+                    self.domain
+                );
                 for record in &doc.records {
-                    println!("  {} - {} (provider: {})",
-                        record.agent.name, record.agent.description, record.agent.provider);
+                    println!(
+                        "  {} - {} (provider: {})",
+                        record.agent.name, record.agent.description, record.agent.provider
+                    );
                     for ep in &record.endpoints {
                         println!("    {:?} {}", ep.protocol, ep.url);
                     }

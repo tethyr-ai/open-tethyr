@@ -2,7 +2,7 @@
 // Tests that error types map to correct status codes.
 // These are verified via the server error handling structure.
 
-use open_tethyr::error::{ServerError, CacheError};
+use open_tethyr::error::{CacheError, ServerError};
 
 #[test]
 fn policy_violation_error_exists() {

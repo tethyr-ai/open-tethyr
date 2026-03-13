@@ -1,17 +1,17 @@
 //! Main Cache Server
 
-use axum::Router;
 use axum::routing::get;
+use axum::Router;
 use std::net::SocketAddr;
 use std::sync::Arc;
 
+use super::handlers;
+use super::middleware::CorrelationIdLayer;
+use super::policy::PolicyEngine;
 use crate::cache::coordinator::CacheCoordinator;
 use crate::cache::stats::CacheStats;
 use crate::config::ServerConfig;
 use crate::error::ServerError;
-use super::handlers;
-use super::middleware::CorrelationIdLayer;
-use super::policy::PolicyEngine;
 
 /// Shared application state
 pub struct AppState {
@@ -38,7 +38,8 @@ impl CacheServer {
             config.cache.max_entries,
             config.cache.default_ttl,
             None, // Root cache URL discovered via DNS at runtime
-        ).map_err(|e| ServerError::StartupFailed(e.to_string()))?;
+        )
+        .map_err(|e| ServerError::StartupFailed(e.to_string()))?;
 
         let state = Arc::new(AppState {
             coordinator,
@@ -68,10 +69,12 @@ impl CacheServer {
 
         tracing::info!("Cache server starting on {}", addr);
 
-        let listener = tokio::net::TcpListener::bind(addr).await
+        let listener = tokio::net::TcpListener::bind(addr)
+            .await
             .map_err(|e| ServerError::StartupFailed(e.to_string()))?;
 
-        axum::serve(listener, router).await
+        axum::serve(listener, router)
+            .await
             .map_err(|e| ServerError::StartupFailed(e.to_string()))?;
 
         Ok(())

@@ -34,7 +34,10 @@ impl ValidateCommand {
         }
 
         if has_errors {
-            eprintln!("\nValidation FAILED: {} record(s) with errors", doc.records.len());
+            eprintln!(
+                "\nValidation FAILED: {} record(s) with errors",
+                doc.records.len()
+            );
             std::process::exit(3);
         } else {
             println!("Validation PASSED: {} record(s) valid", doc.records.len());

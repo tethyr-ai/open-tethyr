@@ -1,13 +1,15 @@
 //! Generic OAuth2 Provider (RFC 8414)
 
+use super::provider::OAuthProvider;
 use crate::ax::OAuthEndpoints;
 use crate::error::OAuthError;
-use super::provider::OAuthProvider;
 
 pub struct GenericOAuth2Provider;
 
 impl OAuthProvider for GenericOAuth2Provider {
-    fn provider_name(&self) -> &str { "generic" }
+    fn provider_name(&self) -> &str {
+        "generic"
+    }
 
     fn generate_endpoints(&self, domain: &str) -> Result<OAuthEndpoints, OAuthError> {
         let base = format!("https://{}", domain);

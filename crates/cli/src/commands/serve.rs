@@ -29,7 +29,9 @@ impl ServeCommand {
     pub async fn execute(&self) -> Result<(), Box<dyn std::error::Error>> {
         let server_config = if let Some(ref config_path) = self.config {
             let config = open_tethyr::config::load_config(config_path)?;
-            config.server.unwrap_or_else(|| self.default_server_config())
+            config
+                .server
+                .unwrap_or_else(|| self.default_server_config())
         } else {
             self.default_server_config()
         };
@@ -41,7 +43,10 @@ impl ServeCommand {
 
     fn default_server_config(&self) -> open_tethyr::config::ServerConfig {
         open_tethyr::config::ServerConfig {
-            domain: self.domain.clone().unwrap_or_else(|| "localhost".to_string()),
+            domain: self
+                .domain
+                .clone()
+                .unwrap_or_else(|| "localhost".to_string()),
             port: self.port,
             cache: open_tethyr::config::CacheConfig {
                 max_entries: self.max_entries,
