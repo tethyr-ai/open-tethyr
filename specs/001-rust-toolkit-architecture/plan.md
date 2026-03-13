@@ -6,7 +6,7 @@
 
 ## Summary
 
-Open-tethyr is a distributed caching system for agent discovery implementing the AX (Agent Discovery Exchange) protocol. The system provides a Rust Cargo workspace with three concerns: a core library (`open-tethyr`) with AX protocol models, validation, DNS discovery, HTTP client, OAuth templates, and cache logic; a CLI binary (`open-tethyr-cli`) for record generation, validation, discovery testing, and server management; and an embedded cache server (via feature flag) with hierarchical caching, policy enforcement, rate limiting, and structured observability. The architecture uses Rust feature flags to offer a lightweight client SDK by default and opt-in server functionality.
+Open-tethyr is a distributed caching system for agent discovery implementing the AX (Agent Discovery Exchange) protocol. The system provides a Rust Cargo workspace with two crates: a core library (`open-tethyr`) with AX protocol models, validation, DNS discovery, HTTP client, OAuth templates, and cache logic; and a CLI binary (`open-tethyr`) for record generation, validation, discovery testing, and server management. The cache server is embedded in the library behind a feature flag, providing hierarchical caching, policy enforcement, rate limiting, and structured observability. The architecture uses Rust feature flags to offer a lightweight client SDK by default and opt-in server functionality.
 
 ## Technical Context
 
@@ -23,11 +23,18 @@ Open-tethyr is a distributed caching system for agent discovery implementing the
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+*Validated against: constitution v1.0.0 (ratified 2026-03-13)*
 
-The project constitution is not yet ratified (template placeholders only). No gates to enforce. Proceeding with standard engineering best practices:
-
-- **Pre-Phase 0**: PASS - No constitution violations (no constitution defined)
-- **Post-Phase 1**: PASS - Design follows modular library-first approach, comprehensive testing strategy, structured logging, and clean separation of concerns
+| Principle | Pre-Phase 0 | Post-Phase 1 | Evidence |
+|-----------|-------------|--------------|----------|
+| I. Library-First Architecture | PASS | PASS | Two-crate workspace, feature flags (client/server/full), lib.rs re-exports, no circular deps |
+| II. AX Protocol Compliance | PASS | PASS | record_type="AX", version="1.0" enforced, approved auth methods only, HTTPS mandatory, well-known paths |
+| III. Property-Based Testing | PASS | PASS | 26 property tests planned with proptest, custom generators, wiremock/mockall for mocks |
+| IV. Simplicity/YAGNI | PASS | PASS | In-memory HashMap+LRU only, no premature trait abstractions, all deps justified by requirements |
+| V. Structured Observability | PASS | PASS | Correlation IDs (UUID v4), structured log fields, /metrics in Prometheus format, audit logging |
+| VI. Static Distribution | PASS | PASS | musl static linking, rustls TLS, multi-stage Docker, <50MB binaries |
+| Performance Standards | PASS | PASS | Criterion benchmarks for all 6 thresholds, concurrency load test for 1000 req |
+| Development Workflow | PASS | PASS | clippy -D warnings, cargo fmt, full test suite, thiserror in lib / anyhow in CLI, config precedence enforced |
 
 ## Project Structure
 
@@ -105,10 +112,11 @@ open-tethyr/
 │       │   ├── main.rs           # Entry point, clap CLI dispatch
 │       │   └── commands/
 │       │       ├── mod.rs
-│       │       ├── generate.rs   # open-tethyr generate
-│       │       ├── validate.rs   # open-tethyr validate
-│       │       ├── discover.rs   # open-tethyr discover
-│       │       └── serve.rs      # open-tethyr serve
+│       │       ├── generate.rs          # open-tethyr generate
+│       │       ├── validate.rs          # open-tethyr validate
+│       │       ├── discover.rs          # open-tethyr discover
+│       │       ├── serve.rs             # open-tethyr serve
+│       │       └── cache_invalidate.rs  # open-tethyr cache-invalidate
 │       └── tests/                # CLI integration tests
 ├── tests/                        # Workspace-level integration tests
 ├── examples/                     # Usage examples
@@ -120,4 +128,4 @@ open-tethyr/
 
 ## Complexity Tracking
 
-No constitution violations to justify - constitution is not yet ratified.
+No constitution violations identified. All 6 principles and both supplementary sections (Performance Standards, Development Workflow) are satisfied by the current design. See Constitution Check table above for evidence.

@@ -23,7 +23,7 @@
 - [ ] T004 [P] Create library entry point with module declarations and feature-gated re-exports in crates/open-tethyr/src/lib.rs (pub mod ax, cache, config, dns, http, auth, error; #[cfg(feature="client")] pub mod client; #[cfg(feature="server")] pub mod server)
 - [ ] T005 [P] Create shared error types using thiserror: AxError, CacheError, ConfigError, DnsError, HttpError, ServerError, ClientError, OAuthError in crates/open-tethyr/src/error.rs
 - [ ] T006 [P] Create module entry points (mod.rs) for ax/, cache/, config/, dns/, http/, auth/, server/ directories under crates/open-tethyr/src/ with appropriate pub use re-exports
-- [ ] T007 [P] Create CLI entry point with clap Parser, Subcommand enum (Generate, Validate, Discover, Serve), and tokio::main dispatch in crates/cli/src/main.rs and crates/cli/src/commands/mod.rs
+- [ ] T007 [P] Create CLI entry point with clap Parser, Subcommand enum (Generate, Validate, Discover, Serve, CacheInvalidate), and tokio::main dispatch in crates/cli/src/main.rs and crates/cli/src/commands/mod.rs
 - [ ] T008 [P] Create directory scaffolding for tests/, examples/, docker/, .github/workflows/, crates/open-tethyr/tests/, crates/cli/tests/ with placeholder files
 - [ ] T009 Verify workspace builds with `cargo check --workspace --all-features` and `cargo check --workspace` (default features only)
 
@@ -55,7 +55,8 @@
 - [ ] T027 [P] Write property test (Property 18): DNS TXT record parsing - "endpoint=<url>" format correctly extracted, malformed records rejected in crates/open-tethyr/tests/property_dns.rs
 - [ ] T028 [P] Write property test (Property 13): AX subdomain URL construction - build_ax_url correctly formats https://_agent.{domain}/.well-known/agent-exchange.json for any valid domain in crates/open-tethyr/tests/property_url.rs
 - [ ] T029 Create test utilities: MockDnsResolver, test fixtures for valid/invalid AX records, arb_agent_record/arb_agent/arb_endpoint/arb_auth_method/arb_domain/arb_valid_yaml_config proptest generators in crates/open-tethyr/tests/test_utils.rs
-- [ ] T030 Verify all foundational tests pass with `cargo test --workspace --all-features`
+- [ ] T030 [P] Implement environment variable configuration support: OPEN_TETHYR_LOG, OPEN_TETHYR_CONFIG, OPEN_TETHYR_DOMAIN, OPEN_TETHYR_PORT with precedence CLI > env > config file > defaults (constitution mandate) in crates/cli/src/main.rs
+- [ ] T031 Verify all foundational tests pass with `cargo test --workspace --all-features`
 
 **Checkpoint**: Foundation ready - all core types, validation, configuration, OAuth, DNS, HTTP client, and generators working. User story implementation can now begin.
 
@@ -69,15 +70,15 @@
 
 ### Tests for User Story 1
 
-- [ ] T031 [P] [US1] Write property test (Property 1): AX record generation correctness - for any valid YAML config, generated document has record_type="AX", version="1.0", valid structure per AX RFC in crates/open-tethyr/tests/property_generation.rs
-- [ ] T032 [P] [US1] Write property test (Property 24): AX version validation and handling - version="1.0" accepted, unsupported versions logged and skipped in crates/open-tethyr/tests/property_version.rs
-- [ ] T033 [P] [US1] Write property test (Property 3): well-known file structure generation - output includes /.well-known/agent-exchange.json path with correct directory structure in crates/open-tethyr/tests/property_wellknown.rs
+- [ ] T032 [P] [US1] Write property test (Property 1): AX record generation correctness - for any valid YAML config, generated document has record_type="AX", version="1.0", valid structure per AX RFC in crates/open-tethyr/tests/property_generation.rs
+- [ ] T033 [P] [US1] Write property test (Property 24): AX version validation and handling - version="1.0" accepted, unsupported versions logged and skipped in crates/open-tethyr/tests/property_version.rs
+- [ ] T034 [P] [US1] Write property test (Property 3): well-known file structure generation - output includes /.well-known/agent-exchange.json path with correct directory structure in crates/open-tethyr/tests/property_wellknown.rs
 
 ### Implementation for User Story 1
 
-- [ ] T034 [US1] Implement GenerateCommand with clap Args: --config (PathBuf, required), --output (PathBuf, required), --validate (bool flag); execute() loads YAML config via ConfigMerger, generates via AxGenerator, optionally validates via AxValidator, writes via FileWriter in crates/cli/src/commands/generate.rs
-- [ ] T035 [US1] Implement ValidateCommand with clap Args: positional path to AX JSON file; execute() reads file, parses JSON, runs AxValidator::validate_record() on each record, reports errors to stderr with field paths in crates/cli/src/commands/validate.rs
-- [ ] T036 [US1] Write CLI integration test: generate command produces valid AX JSON from sample YAML config, validate command passes on generated output, validate command fails on intentionally invalid input in crates/cli/tests/test_generate_validate.rs
+- [ ] T035 [US1] Implement GenerateCommand with clap Args: --config (PathBuf, required), --output (PathBuf, required), --validate (bool flag); execute() loads YAML config via ConfigMerger, generates via AxGenerator, optionally validates via AxValidator, writes via FileWriter in crates/cli/src/commands/generate.rs
+- [ ] T036 [US1] Implement basic ValidateCommand with clap Args: positional path to AX JSON file; execute() reads file, parses JSON, runs AxValidator::validate_record() on each record, reports errors to stderr with field paths in crates/cli/src/commands/validate.rs (Note: provides minimal validate for --validate flag in generate; US2 enhances this with detailed reporting)
+- [ ] T037 [US1] Write CLI integration test: generate command produces valid AX JSON from sample YAML config, validate command passes on generated output, validate command fails on intentionally invalid input in crates/cli/tests/test_generate_validate.rs
 
 **Checkpoint**: User Story 1 complete - administrators can generate and validate AX records via CLI.
 
@@ -91,13 +92,13 @@
 
 ### Tests for User Story 2
 
-- [ ] T037 [P] [US2] Write property test (Property 25): auth method validation - auth methods from {OIDC, OAuth2, mTLS, JWT, API_KEY} accepted, others rejected in crates/open-tethyr/tests/property_auth_validation.rs
+- [ ] T038 [P] [US2] Write property test (Property 25): auth method validation - auth methods from {OIDC, OAuth2, mTLS, JWT, API_KEY} accepted, others rejected in crates/open-tethyr/tests/property_auth_validation.rs
 
 ### Implementation for User Story 2
 
-- [ ] T038 [US2] Enhance AxValidator to produce detailed ValidationReport with per-field error paths, severity levels (error vs warning), and human-readable messages for: missing required fields, invalid record_type, unsupported version (warning), invalid auth methods, empty endpoints in crates/open-tethyr/src/ax/validator.rs
-- [ ] T039 [US2] Enhance ValidateCommand output formatting: summary line for valid records, itemized error list for invalid records with field path and description, exit code 0 for valid / 3 for invalid in crates/cli/src/commands/validate.rs
-- [ ] T040 [US2] Write integration test: validate command with valid AX record exits 0, with missing agent.name exits 3, with version "2.0" shows warning, with auth ["INVALID"] reports error in crates/cli/tests/test_validate_detailed.rs
+- [ ] T039 [US2] Enhance AxValidator to produce detailed ValidationReport with per-field error paths, severity levels (error vs warning), and human-readable messages for: missing required fields, invalid record_type, unsupported version (warning), invalid auth methods, empty endpoints in crates/open-tethyr/src/ax/validator.rs
+- [ ] T040 [US2] Enhance ValidateCommand output formatting: summary line for valid records, itemized error list for invalid records with field path and description, exit code 0 for valid / 3 for invalid in crates/cli/src/commands/validate.rs
+- [ ] T041 [US2] Write integration test: validate command with valid AX record exits 0, with missing agent.name exits 3, with version "2.0" shows warning, with auth ["INVALID"] reports error in crates/cli/tests/test_validate_detailed.rs
 
 **Checkpoint**: User Story 2 complete - integrators can validate any AX record with detailed error reporting.
 
@@ -111,35 +112,35 @@
 
 ### Tests for User Story 3
 
-- [ ] T041 [P] [US3] Write property test (Property 4): cache-first discovery - when cache has entry, no external fetch occurs in crates/open-tethyr/tests/property_cache_first.rs
-- [ ] T042 [P] [US3] Write property test (Property 5): cache miss fallback - on miss, system fetches from correct AX endpoint and validates response path in crates/open-tethyr/tests/property_cache_miss.rs
-- [ ] T043 [P] [US3] Write property test (Property 7): TTL expiration - expired records not returned, trigger re-fetch; non-expired served from cache in crates/open-tethyr/tests/property_ttl.rs
-- [ ] T044 [P] [US3] Write property test (Property 15): LRU eviction - at max capacity, least recently used evicted, most recently accessed preserved in crates/open-tethyr/tests/property_lru.rs
-- [ ] T045 [P] [US3] Write property test (Property 26): cache size limit enforcement - cache never exceeds max_entries in crates/open-tethyr/tests/property_cache_size.rs
-- [ ] T046 [P] [US3] Write property test (Property 16): Cache-Control header compliance - respects max-age and no-cache directives in crates/open-tethyr/tests/property_cache_control.rs
-- [ ] T047 [P] [US3] Write property test (Property 11): hierarchical cache fallback chain - local miss -> root -> direct, upstream failure falls back gracefully in crates/open-tethyr/tests/property_hierarchy.rs
-- [ ] T048 [P] [US3] Write property test (Property 12): circular dependency prevention - cyclic cache configs detected and rejected at startup in crates/open-tethyr/tests/property_circular.rs
-- [ ] T049 [P] [US3] Write property test (Property 6): domain locking policy enforcement - locked domain rejects external requests, allowlisted domains permitted in crates/open-tethyr/tests/property_policy.rs
-- [ ] T050 [P] [US3] Write property test (Property 21): rate limiting enforcement - exceeding limit returns rejection, tokens refill over time in crates/open-tethyr/tests/property_rate_limit.rs
-- [ ] T051 [P] [US3] Write property test (Property 23): HTTP error response mapping - PolicyViolation->403, RateLimitExceeded->429, NotFound->404, upstream failure->502 in crates/open-tethyr/tests/property_error_responses.rs
-- [ ] T052 [P] [US3] Write property test (Property 22): request timeout handling - external fetches timeout after configured duration in crates/open-tethyr/tests/property_timeout.rs
-- [ ] T053 [P] [US3] Write property test (Property 14): HTTPS certificate validation - invalid certificates rejected in crates/open-tethyr/tests/property_https.rs
+- [ ] T042 [P] [US3] Write property test (Property 4): cache-first discovery - when cache has entry, no external fetch occurs in crates/open-tethyr/tests/property_cache_first.rs
+- [ ] T043 [P] [US3] Write property test (Property 5): cache miss fallback - on miss, system fetches from correct AX endpoint and validates response path in crates/open-tethyr/tests/property_cache_miss.rs
+- [ ] T044 [P] [US3] Write property test (Property 7): TTL expiration - expired records not returned, trigger re-fetch; non-expired served from cache in crates/open-tethyr/tests/property_ttl.rs
+- [ ] T045 [P] [US3] Write property test (Property 15): LRU eviction - at max capacity, least recently used evicted, most recently accessed preserved in crates/open-tethyr/tests/property_lru.rs
+- [ ] T046 [P] [US3] Write property test (Property 26): cache size limit enforcement - cache never exceeds max_entries in crates/open-tethyr/tests/property_cache_size.rs
+- [ ] T047 [P] [US3] Write property test (Property 16): Cache-Control header compliance - respects max-age and no-cache directives in crates/open-tethyr/tests/property_cache_control.rs
+- [ ] T048 [P] [US3] Write property test (Property 11): hierarchical cache fallback chain - local miss -> root -> direct, upstream failure falls back gracefully in crates/open-tethyr/tests/property_hierarchy.rs
+- [ ] T049 [P] [US3] Write property test (Property 12): circular dependency prevention - cyclic cache configs detected and rejected at startup in crates/open-tethyr/tests/property_circular.rs
+- [ ] T050 [P] [US3] Write property test (Property 6): domain locking policy enforcement - locked domain rejects external requests, allowlisted domains permitted in crates/open-tethyr/tests/property_policy.rs
+- [ ] T051 [P] [US3] Write property test (Property 21): rate limiting enforcement - exceeding limit returns rejection, tokens refill over time in crates/open-tethyr/tests/property_rate_limit.rs
+- [ ] T052 [P] [US3] Write property test (Property 23): HTTP error response mapping - PolicyViolation->403, RateLimitExceeded->429, NotFound->404, upstream failure->502 in crates/open-tethyr/tests/property_error_responses.rs
+- [ ] T053 [P] [US3] Write property test (Property 22): request timeout handling - external fetches timeout after configured duration in crates/open-tethyr/tests/property_timeout.rs
+- [ ] T054 [P] [US3] Write property test (Property 14): HTTPS certificate validation - invalid certificates rejected in crates/open-tethyr/tests/property_https.rs
 
 ### Implementation for User Story 3
 
-- [ ] T054 [US3] Implement MemoryCache with Arc<RwLock<HashMap<String, CacheEntry>>> and lru::LruCache: get() checks TTL, put() with LRU eviction when max_entries reached, invalidate(), clear(), size() in crates/open-tethyr/src/cache/memory.rs
-- [ ] T055 [US3] Implement CacheStats with AtomicUsize/AtomicU64 counters: total_entries, hit_count, miss_count, eviction_count, memory_usage_bytes; record_hit(), record_miss(), record_eviction(), update_memory_usage() in crates/open-tethyr/src/cache/stats.rs
-- [ ] T056 [US3] Implement CacheCoordinator with local MemoryCache, optional root_cache_url (from DNS), fallback chain: local -> root cache -> direct fetch; detect circular deps via DFS during init in crates/open-tethyr/src/cache/coordinator.rs
-- [ ] T057 [US3] Implement TokenBucket (tokens, capacity, refill_rate, last_refill) with consume() and refill(); RateLimiter with Arc<RwLock<HashMap<IpAddr, TokenBucket>>>, check_rate_limit(), reset_limits() in crates/open-tethyr/src/cache/rate_limiter.rs
-- [ ] T058 [US3] Implement PolicyEngine with domain_locking flag, home_domain, allowlist; check_discovery_allowed() returning Ok or PolicyViolation error in crates/open-tethyr/src/server/policy.rs
-- [ ] T059 [US3] Implement CacheServer struct (cache, coordinator, policy, rate_limiter, metrics, config), new() initialization, start() with axum Router, build_routes() wiring /discover/:domain, /health, /metrics in crates/open-tethyr/src/server/cache_server.rs
-- [ ] T060 [US3] Implement request handlers: handle_discover() with correlation ID, rate limiting, policy check, coordinator.discover(), structured logging; handle_health() returning JSON status; handle_metrics() in Prometheus text format in crates/open-tethyr/src/server/handlers.rs
-- [ ] T061 [US3] Implement middleware: RateLimitLayer wrapping rate limiter check, CorrelationIdLayer adding X-Correlation-Id to responses, request timeout via tower::timeout in crates/open-tethyr/src/server/middleware.rs
-- [ ] T062 [US3] Implement ServerError IntoResponse mapping: PolicyViolation->403, RateLimitExceeded->429, CacheError::NotFound->404, upstream failures->502; JSON body with error message, timestamp, correlation_id in crates/open-tethyr/src/server/cache_server.rs
-- [ ] T063 [US3] Implement CacheMetrics with AtomicU64 hit/miss counters, SimpleHistogram for request duration (buckets: 1ms, 5ms, 10ms, 50ms, 100ms, 500ms, 1s, 5s), AtomicU32 active_connections in crates/open-tethyr/src/server/handlers.rs
-- [ ] T064 [US3] Implement ServeCommand with clap Args: --domain, --port (default 8080), --config (optional YAML path), --max-entries (default 10000), --ttl (default 3600); execute() builds ServerConfig, starts CacheServer in crates/cli/src/commands/serve.rs
-- [ ] T065 [US3] Write integration test: start cache server, send discovery request via HTTP, verify cache miss triggers upstream fetch (wiremock), second request hits cache, verify /health and /metrics endpoints respond correctly in crates/open-tethyr/tests/integration_server.rs
-- [ ] T066 [US3] Write integration test: cache server with domain_locking=true rejects external domain requests with 403, allows home_domain and allowlisted domains in crates/open-tethyr/tests/integration_policy.rs
+- [ ] T055 [US3] Implement MemoryCache with Arc<RwLock<HashMap<String, CacheEntry>>> and lru::LruCache: get() checks TTL, put() with LRU eviction when max_entries reached, invalidate(), clear(), size() in crates/open-tethyr/src/cache/memory.rs
+- [ ] T056 [US3] Implement CacheStats with AtomicUsize/AtomicU64 counters: total_entries, hit_count, miss_count, eviction_count, memory_usage_bytes; record_hit(), record_miss(), record_eviction(), update_memory_usage() in crates/open-tethyr/src/cache/stats.rs
+- [ ] T057 [US3] Implement CacheCoordinator with local MemoryCache, optional root_cache_url (from DNS), fallback chain: local -> root cache -> direct fetch; detect circular deps via DFS during init in crates/open-tethyr/src/cache/coordinator.rs
+- [ ] T058 [US3] Implement TokenBucket (tokens, capacity, refill_rate, last_refill) with consume() and refill(); RateLimiter with Arc<RwLock<HashMap<IpAddr, TokenBucket>>>, check_rate_limit(), reset_limits() in crates/open-tethyr/src/cache/rate_limiter.rs
+- [ ] T059 [US3] Implement PolicyEngine with domain_locking flag, home_domain, allowlist; check_discovery_allowed() returning Ok or PolicyViolation error in crates/open-tethyr/src/server/policy.rs
+- [ ] T060 [US3] Implement CacheServer struct (cache, coordinator, policy, rate_limiter, metrics, config), new() initialization, start() with axum Router, build_routes() wiring /discover/:domain, /health, /metrics in crates/open-tethyr/src/server/cache_server.rs
+- [ ] T061 [US3] Implement request handlers: handle_discover() with correlation ID, rate limiting, policy check, coordinator.discover(), structured logging; handle_health() returning JSON status; handle_metrics() in Prometheus text format in crates/open-tethyr/src/server/handlers.rs
+- [ ] T062 [US3] Implement middleware: RateLimitLayer wrapping rate limiter check, CorrelationIdLayer adding X-Correlation-Id to responses, request timeout via tower::timeout in crates/open-tethyr/src/server/middleware.rs
+- [ ] T063 [US3] Implement ServerError IntoResponse mapping: PolicyViolation->403, RateLimitExceeded->429, CacheError::NotFound->404, upstream failures->502; JSON body with error message, timestamp, correlation_id in crates/open-tethyr/src/server/cache_server.rs
+- [ ] T064 [US3] Implement CacheMetrics with AtomicU64 hit/miss counters, SimpleHistogram for request duration (buckets: 1ms, 5ms, 10ms, 50ms, 100ms, 500ms, 1s, 5s), AtomicU32 active_connections in crates/open-tethyr/src/server/handlers.rs
+- [ ] T065 [US3] Implement ServeCommand with clap Args: --domain, --port (default 8080), --config (optional YAML path), --max-entries (default 10000), --ttl (default 3600); execute() builds ServerConfig, starts CacheServer in crates/cli/src/commands/serve.rs
+- [ ] T066 [US3] Write integration test: start cache server, send discovery request via HTTP, verify cache miss triggers upstream fetch (wiremock), second request hits cache, verify /health and /metrics endpoints respond correctly in crates/open-tethyr/tests/integration_server.rs
+- [ ] T067 [US3] Write integration test: cache server with domain_locking=true rejects external domain requests with 403, allows home_domain and allowlisted domains in crates/open-tethyr/tests/integration_policy.rs
 
 **Checkpoint**: User Story 3 complete - operators can deploy cache server with full caching, policy enforcement, rate limiting, and observability.
 
@@ -153,13 +154,13 @@
 
 ### Tests for User Story 4
 
-- [ ] T067 [P] [US4] Write property test (Property 17): DNS cache discovery routing - cache found via DNS -> requests go through cache; no cache -> direct discovery in crates/open-tethyr/tests/property_client_routing.rs
-- [ ] T068 [P] [US4] Write property test (Property 19): DNS discovery error resilience - DNS failures don't propagate, client falls back to direct discovery in crates/open-tethyr/tests/property_dns_resilience.rs
+- [ ] T068 [P] [US4] Write property test (Property 17): DNS cache discovery routing - cache found via DNS -> requests go through cache; no cache -> direct discovery in crates/open-tethyr/tests/property_client_routing.rs
+- [ ] T069 [P] [US4] Write property test (Property 19): DNS discovery error resilience - DNS failures don't propagate, client falls back to direct discovery in crates/open-tethyr/tests/property_dns_resilience.rs
 
 ### Implementation for User Story 4
 
-- [ ] T069 [US4] Implement OpenTethyr client struct (domain, cache_url, http_client, dns_discovery); new() with automatic DNS cache discovery; discover() trying cache then direct; discover_with_cache() for explicit cache URL in crates/open-tethyr/src/client.rs
-- [ ] T070 [US4] Write integration test: OpenTethyr client with mock DNS returning cache endpoint routes requests to cache (wiremock); client with no DNS record falls back to direct fetch; client with unreachable cache falls back to direct in crates/open-tethyr/tests/integration_client.rs
+- [ ] T070 [US4] Implement OpenTethyr client struct (domain, cache_url, http_client, dns_discovery); new() with automatic DNS cache discovery; discover() trying cache then direct; discover_with_cache() for explicit cache URL in crates/open-tethyr/src/client.rs
+- [ ] T071 [US4] Write integration test: OpenTethyr client with mock DNS returning cache endpoint routes requests to cache (wiremock); client with no DNS record falls back to direct fetch; client with unreachable cache falls back to direct in crates/open-tethyr/tests/integration_client.rs
 
 **Checkpoint**: User Story 4 complete - developers can use the client SDK for agent discovery.
 
@@ -173,8 +174,8 @@
 
 ### Implementation for User Story 5
 
-- [ ] T071 [US5] Implement DiscoverCommand with clap Args: positional DOMAIN, --cache (optional URL), --direct (skip cache), --json (JSON output), --timeout (default 30s); execute() uses OpenTethyr client or direct fetch, formats output in crates/cli/src/commands/discover.rs
-- [ ] T072 [US5] Write CLI integration test: discover command with mock AX endpoint (wiremock) displays agent names and endpoints; --json flag outputs valid JSON; --cache flag routes through specified cache URL; domain with no AX records reports "no agents found" in crates/cli/tests/test_discover.rs
+- [ ] T072 [US5] Implement DiscoverCommand with clap Args: positional DOMAIN, --cache (optional URL), --direct (skip cache), --json (JSON output), --timeout (default 30s); execute() uses OpenTethyr client or direct fetch, formats output in crates/cli/src/commands/discover.rs
+- [ ] T073 [US5] Write CLI integration test: discover command with mock AX endpoint (wiremock) displays agent names and endpoints; --json flag outputs valid JSON; --cache flag routes through specified cache URL; domain with no AX records reports "no agents found" in crates/cli/tests/test_discover.rs
 
 **Checkpoint**: User Story 5 complete - administrators can test discovery end-to-end via CLI.
 
@@ -188,10 +189,10 @@
 
 ### Implementation for User Story 6
 
-- [ ] T073 [US6] Configure tracing-subscriber with JSON format, configurable log level from ServerConfig.log_level and OPEN_TETHYR_LOG env var, structured fields for all HTTP requests (method, path, status_code, duration_ms, client_ip, cache_hit) in crates/open-tethyr/src/server/cache_server.rs
-- [ ] T074 [US6] Add audit logging: log every discovery request with domain, client_ip, policy_result, cache_result, duration using tracing::info_span and structured fields in crates/open-tethyr/src/server/handlers.rs
-- [ ] T075 [US6] Implement cache invalidation subcommand or extend serve with management endpoint; for MVP, add `open-tethyr cache-invalidate --domain <DOMAIN> --server <URL>` as a CLI command or integrate invalidation via the /discover endpoint with DELETE method in crates/cli/src/commands/serve.rs
-- [ ] T076 [US6] Write integration test: start server, send requests, capture structured logs and verify they contain required fields (method, path, status_code, duration_ms, client_ip, cache_hit, correlation_id); verify /metrics returns updated counters in crates/open-tethyr/tests/integration_observability.rs
+- [ ] T074 [US6] Configure tracing-subscriber with JSON format, configurable log level from ServerConfig.log_level and OPEN_TETHYR_LOG env var, structured fields for all HTTP requests (method, path, status_code, duration_ms, client_ip, cache_hit) in crates/open-tethyr/src/server/cache_server.rs
+- [ ] T075 [US6] Add audit logging: log every discovery request with domain, client_ip, policy_result, cache_result, duration using tracing::info_span and structured fields in crates/open-tethyr/src/server/handlers.rs
+- [ ] T076 [US6] Implement cache invalidation CLI subcommand `open-tethyr cache-invalidate` with clap Args: --domain <DOMAIN> (invalidate single domain), --all (clear entire cache), --server <URL> (target cache server, required); execute() sends DELETE to /cache/:domain or /cache endpoints on the target server; add corresponding DELETE handlers in crates/open-tethyr/src/server/handlers.rs and wire routes in cache_server.rs; CLI command in crates/cli/src/commands/cache_invalidate.rs
+- [ ] T077 [US6] Write integration test: start server, send requests, capture structured logs and verify they contain required fields (method, path, status_code, duration_ms, client_ip, cache_hit, correlation_id); verify /metrics returns updated counters in crates/open-tethyr/tests/integration_observability.rs
 
 **Checkpoint**: User Story 6 complete - operators have full observability and cache management.
 
@@ -205,10 +206,10 @@
 
 ### Implementation for User Story 7
 
-- [ ] T077 [P] [US7] Create CI workflow: cargo fmt --check, cargo clippy --workspace --all-features, cargo test --workspace --all-features in .github/workflows/ci.yml
-- [ ] T078 [P] [US7] Create release workflow: cross-compile for x86_64-unknown-linux-musl (static), x86_64-apple-darwin, x86_64-pc-windows-msvc; upload binaries as GitHub release assets in .github/workflows/release.yml
-- [ ] T079 [P] [US7] Create Docker workflow: multi-stage Dockerfile (builder with musl -> minimal runtime), push to ghcr.io in .github/workflows/docker.yml and docker/Dockerfile
-- [ ] T080 [US7] Create performance benchmarks with criterion: bench_cache_put, bench_cache_get, bench_cache_evict, bench_ax_parse, bench_ax_validate, bench_config_merge in crates/open-tethyr/benches/benchmarks.rs
+- [ ] T078 [P] [US7] Create CI workflow: cargo fmt --check, cargo clippy --workspace --all-features, cargo test --workspace --all-features in .github/workflows/ci.yml
+- [ ] T079 [P] [US7] Create release workflow: cross-compile for x86_64-unknown-linux-musl (static), x86_64-apple-darwin, x86_64-pc-windows-msvc; upload binaries as GitHub release assets in .github/workflows/release.yml
+- [ ] T080 [P] [US7] Create Docker workflow: multi-stage Dockerfile (builder with musl -> minimal runtime), push to ghcr.io in .github/workflows/docker.yml and docker/Dockerfile
+- [ ] T081 [US7] Create performance benchmarks with criterion: bench_cache_put, bench_cache_get, bench_cache_evict, bench_ax_parse, bench_ax_validate, bench_config_merge in crates/open-tethyr/benches/benchmarks.rs
 
 **Checkpoint**: User Story 7 complete - CI/CD pipeline produces cross-platform binaries and Docker images.
 
@@ -218,15 +219,17 @@
 
 **Purpose**: Final validation, cross-story integration, and quality improvements
 
-- [ ] T081 Write workspace-level integration test: full end-to-end flow - generate AX records from YAML config, validate them, start cache server, discover through cache, verify correctness in tests/integration_e2e.rs
-- [ ] T082 [P] Write workspace-level integration test: hierarchical cache - start root cache (wiremock), start regional cache pointing to root, verify fallback chain (local -> root -> direct) and graceful degradation when root unavailable in tests/integration_hierarchy.rs
-- [ ] T083 [P] Write workspace-level integration test: OAuth provider templates integrated with generation - YAML config referencing Okta/Auth0 providers generates AX records with correct security.oauth endpoints in tests/integration_oauth.rs
-- [ ] T084 Add environment variable configuration support: OPEN_TETHYR_LOG, OPEN_TETHYR_CONFIG, OPEN_TETHYR_DOMAIN, OPEN_TETHYR_PORT with precedence CLI > env > config file > defaults in crates/cli/src/main.rs
-- [ ] T085 Run quickstart.md validation: execute each quickstart scenario and verify expected outcomes
-- [ ] T086 Run `cargo clippy --workspace --all-features -- -D warnings` and fix all warnings
-- [ ] T087 Run `cargo fmt --all` and verify formatting
-- [ ] T088 Verify all property tests pass with extended iterations: `PROPTEST_CASES=1000 cargo test --workspace --all-features`
-- [ ] T089 Final validation: `cargo test --workspace --all-features` passes all tests, `cargo build --release --workspace` produces binaries under 50MB
+- [ ] T082 Write workspace-level integration test: full end-to-end flow - generate AX records from YAML config, validate them, start cache server, discover through cache, verify correctness in tests/integration_e2e.rs
+- [ ] T083 [P] Write workspace-level integration test: hierarchical cache - start root cache (wiremock), start regional cache pointing to root, verify fallback chain (local -> root -> direct) and graceful degradation when root unavailable in tests/integration_hierarchy.rs
+- [ ] T084 [P] Write workspace-level integration test: OAuth provider templates integrated with generation - YAML config referencing Okta/Auth0 providers generates AX records with correct security.oauth endpoints in tests/integration_oauth.rs
+- [ ] T085 [P] Write concurrency load test: spawn 1,000 concurrent tokio tasks each sending a discovery request to the cache server (wiremock upstream), verify all requests complete without errors or panics (validates SC-003) in tests/integration_concurrency.rs
+- [ ] T086 [P] Add criterion benchmarks for success criteria timing validation: bench_dns_discovery_with_fallback (SC-004 <2s), bench_hierarchical_fallback_chain (SC-006 <5s), bench_server_cold_start (SC-008 <3s), bench_cli_validate (SC-009 <500ms) in crates/open-tethyr/benches/timing_benchmarks.rs
+- [ ] T087 Run quickstart.md validation: execute each quickstart scenario and verify expected outcomes
+- [ ] T088 Run `cargo clippy --workspace --all-features -- -D warnings` and fix all warnings
+- [ ] T089 Run `cargo fmt --all` and verify formatting
+- [ ] T090 Verify all property tests pass with extended iterations: `PROPTEST_CASES=1000 cargo test --workspace --all-features`
+- [ ] T091 Measure code coverage with cargo-tarpaulin or cargo-llvm-cov: run `cargo tarpaulin --workspace --all-features --out Html` and verify at least 80% line coverage across all crates (validates SC-014)
+- [ ] T092 Final validation: `cargo test --workspace --all-features` passes all tests, `cargo build --release --workspace` produces binaries under 50MB
 
 ---
 
@@ -269,10 +272,11 @@
 - **Phase 2**: T011-T029 extensively parallelizable (different files, independent modules)
 - **Phase 3-4**: US1 and US2 can run in parallel (different CLI commands, shared validator)
 - **Phase 3+5**: US1 and US3 can run in parallel (CLI generation vs server, no overlap)
-- **Phase 5 tests**: T041-T053 all in parallel (different test files)
-- **Phase 5 impl**: T054-T058 partially parallel (different modules)
+- **Phase 5 tests**: T042-T054 all in parallel (different test files)
+- **Phase 5 impl**: T055-T059 partially parallel (different modules)
 - **Phase 6-7**: US4 and US7 can run in parallel (client SDK vs CI/CD, no overlap)
-- **Phase 9**: T077, T078, T079 all in parallel (different workflow files)
+- **Phase 9**: T078, T079, T080 all in parallel (different workflow files)
+- **Phase 10**: T082, T083, T084, T085, T086 all in parallel (different test files)
 
 ---
 
@@ -280,25 +284,25 @@
 
 ```bash
 # Launch all property tests in parallel (different files):
-Task T041: "Property test cache-first discovery in property_cache_first.rs"
-Task T042: "Property test cache miss fallback in property_cache_miss.rs"
-Task T043: "Property test TTL expiration in property_ttl.rs"
-Task T044: "Property test LRU eviction in property_lru.rs"
-Task T045: "Property test cache size limit in property_cache_size.rs"
-Task T046: "Property test Cache-Control headers in property_cache_control.rs"
-Task T047: "Property test hierarchical fallback in property_hierarchy.rs"
-Task T048: "Property test circular dependency in property_circular.rs"
-Task T049: "Property test domain locking in property_policy.rs"
-Task T050: "Property test rate limiting in property_rate_limit.rs"
-Task T051: "Property test error responses in property_error_responses.rs"
-Task T052: "Property test request timeout in property_timeout.rs"
-Task T053: "Property test HTTPS validation in property_https.rs"
+Task T042: "Property test cache-first discovery in property_cache_first.rs"
+Task T043: "Property test cache miss fallback in property_cache_miss.rs"
+Task T044: "Property test TTL expiration in property_ttl.rs"
+Task T045: "Property test LRU eviction in property_lru.rs"
+Task T046: "Property test cache size limit in property_cache_size.rs"
+Task T047: "Property test Cache-Control headers in property_cache_control.rs"
+Task T048: "Property test hierarchical fallback in property_hierarchy.rs"
+Task T049: "Property test circular dependency in property_circular.rs"
+Task T050: "Property test domain locking in property_policy.rs"
+Task T051: "Property test rate limiting in property_rate_limit.rs"
+Task T052: "Property test error responses in property_error_responses.rs"
+Task T053: "Property test request timeout in property_timeout.rs"
+Task T054: "Property test HTTPS validation in property_https.rs"
 
 # Launch parallelizable implementation tasks:
-Task T054: "MemoryCache in cache/memory.rs"
-Task T055: "CacheStats in cache/stats.rs"
-Task T057: "RateLimiter in cache/rate_limiter.rs"
-Task T058: "PolicyEngine in server/policy.rs"
+Task T055: "MemoryCache in cache/memory.rs"
+Task T056: "CacheStats in cache/stats.rs"
+Task T058: "RateLimiter in cache/rate_limiter.rs"
+Task T059: "PolicyEngine in server/policy.rs"
 ```
 
 ---

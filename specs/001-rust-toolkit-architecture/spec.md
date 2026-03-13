@@ -160,7 +160,7 @@ A DevOps engineer needs to deploy open-tethyr across different environments (Lin
 - **FR-017**: System MUST support configuration inheritance with global defaults, agent-specific overrides, and nested inheritance for complex configuration objects with type-safe merging
 - **FR-018**: System MUST support YAML configuration files, command-line argument overrides, and environment variable configuration with validation of domain names, port numbers, URLs, and TTL values
 - **FR-019**: System MUST use structured logging with configurable log levels (error, warn, info, debug, trace) and include correlation IDs for request tracking across components
-- **FR-020**: System MUST return appropriate HTTP status codes: 400 (invalid requests), 404 (not found), 429 (rate limiting), 502 (upstream fetch failures), 503 (service unavailable)
+- **FR-020**: System MUST return appropriate HTTP status codes: 400 (invalid requests), 403 (policy violations), 404 (not found), 429 (rate limiting), 502 (upstream fetch failures)
 - **FR-021**: System MUST validate AX record version field is "1.0", log warnings for unsupported versions, skip agents with unsupported protocol versions, and include version information in error messages
 - **FR-022**: System MUST provide a client API for agent discovery from Rust applications with automatic DNS-based cache discovery and fallback to direct HTTPS discovery
 - **FR-023**: System MUST support cache invalidation via CLI command
