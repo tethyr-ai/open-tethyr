@@ -128,17 +128,17 @@
 
 ### Implementation for User Story 3
 
-- [ ] T055 [US3] Implement MemoryCache with Arc<RwLock<HashMap<String, CacheEntry>>> and lru::LruCache: get() checks TTL, put() with LRU eviction when max_entries reached, invalidate(), clear(), size() in crates/open-tethyr/src/cache/memory.rs
-- [ ] T056 [US3] Implement CacheStats with AtomicUsize/AtomicU64 counters: total_entries, hit_count, miss_count, eviction_count, memory_usage_bytes; record_hit(), record_miss(), record_eviction(), update_memory_usage() in crates/open-tethyr/src/cache/stats.rs
-- [ ] T057 [US3] Implement CacheCoordinator with local MemoryCache, optional root_cache_url (from DNS), fallback chain: local -> root cache -> direct fetch; detect circular deps via DFS during init in crates/open-tethyr/src/cache/coordinator.rs
-- [ ] T058 [US3] Implement TokenBucket (tokens, capacity, refill_rate, last_refill) with consume() and refill(); RateLimiter with Arc<RwLock<HashMap<IpAddr, TokenBucket>>>, check_rate_limit(), reset_limits() in crates/open-tethyr/src/cache/rate_limiter.rs
-- [ ] T059 [US3] Implement PolicyEngine with domain_locking flag, home_domain, allowlist; check_discovery_allowed() returning Ok or PolicyViolation error in crates/open-tethyr/src/server/policy.rs
-- [ ] T060 [US3] Implement CacheServer struct (cache, coordinator, policy, rate_limiter, metrics, config), new() initialization, start() with axum Router, build_routes() wiring /discover/:domain, /health, /metrics in crates/open-tethyr/src/server/cache_server.rs
-- [ ] T061 [US3] Implement request handlers: handle_discover() with correlation ID, rate limiting, policy check, coordinator.discover(), structured logging; handle_health() returning JSON status; handle_metrics() in Prometheus text format in crates/open-tethyr/src/server/handlers.rs
-- [ ] T062 [US3] Implement middleware: RateLimitLayer wrapping rate limiter check, CorrelationIdLayer adding X-Correlation-Id to responses, request timeout via tower::timeout in crates/open-tethyr/src/server/middleware.rs
-- [ ] T063 [US3] Implement ServerError IntoResponse mapping: PolicyViolation->403, RateLimitExceeded->429, CacheError::NotFound->404, upstream failures->502; JSON body with error message, timestamp, correlation_id in crates/open-tethyr/src/server/cache_server.rs
-- [ ] T064 [US3] Implement CacheMetrics with AtomicU64 hit/miss counters, SimpleHistogram for request duration (buckets: 1ms, 5ms, 10ms, 50ms, 100ms, 500ms, 1s, 5s), AtomicU32 active_connections in crates/open-tethyr/src/server/handlers.rs
-- [ ] T065 [US3] Implement ServeCommand with clap Args: --domain, --port (default 8080), --config (optional YAML path), --max-entries (default 10000), --ttl (default 3600); execute() builds ServerConfig, starts CacheServer in crates/cli/src/commands/serve.rs
+- [x] T055 [US3] Implement MemoryCache with Arc<RwLock<HashMap<String, CacheEntry>>> and lru::LruCache: get() checks TTL, put() with LRU eviction when max_entries reached, invalidate(), clear(), size() in crates/open-tethyr/src/cache/memory.rs
+- [x] T056 [US3] Implement CacheStats with AtomicUsize/AtomicU64 counters: total_entries, hit_count, miss_count, eviction_count, memory_usage_bytes; record_hit(), record_miss(), record_eviction(), update_memory_usage() in crates/open-tethyr/src/cache/stats.rs
+- [x] T057 [US3] Implement CacheCoordinator with local MemoryCache, optional root_cache_url (from DNS), fallback chain: local -> root cache -> direct fetch; detect circular deps via DFS during init in crates/open-tethyr/src/cache/coordinator.rs
+- [x] T058 [US3] Implement TokenBucket (tokens, capacity, refill_rate, last_refill) with consume() and refill(); RateLimiter with Arc<RwLock<HashMap<IpAddr, TokenBucket>>>, check_rate_limit(), reset_limits() in crates/open-tethyr/src/cache/rate_limiter.rs
+- [x] T059 [US3] Implement PolicyEngine with domain_locking flag, home_domain, allowlist; check_discovery_allowed() returning Ok or PolicyViolation error in crates/open-tethyr/src/server/policy.rs
+- [x] T060 [US3] Implement CacheServer struct (cache, coordinator, policy, rate_limiter, metrics, config), new() initialization, start() with axum Router, build_routes() wiring /discover/:domain, /health, /metrics in crates/open-tethyr/src/server/cache_server.rs
+- [x] T061 [US3] Implement request handlers: handle_discover() with correlation ID, rate limiting, policy check, coordinator.discover(), structured logging; handle_health() returning JSON status; handle_metrics() in Prometheus text format in crates/open-tethyr/src/server/handlers.rs
+- [x] T062 [US3] Implement middleware: RateLimitLayer wrapping rate limiter check, CorrelationIdLayer adding X-Correlation-Id to responses, request timeout via tower::timeout in crates/open-tethyr/src/server/middleware.rs
+- [x] T063 [US3] Implement ServerError IntoResponse mapping: PolicyViolation->403, RateLimitExceeded->429, CacheError::NotFound->404, upstream failures->502; JSON body with error message, timestamp, correlation_id in crates/open-tethyr/src/server/cache_server.rs
+- [x] T064 [US3] Implement CacheMetrics with AtomicU64 hit/miss counters, SimpleHistogram for request duration (buckets: 1ms, 5ms, 10ms, 50ms, 100ms, 500ms, 1s, 5s), AtomicU32 active_connections in crates/open-tethyr/src/server/handlers.rs
+- [x] T065 [US3] Implement ServeCommand with clap Args: --domain, --port (default 8080), --config (optional YAML path), --max-entries (default 10000), --ttl (default 3600); execute() builds ServerConfig, starts CacheServer in crates/cli/src/commands/serve.rs
 - [ ] T066 [US3] Write integration test: start cache server, send discovery request via HTTP, verify cache miss triggers upstream fetch (wiremock), second request hits cache, verify /health and /metrics endpoints respond correctly in crates/open-tethyr/tests/integration_server.rs
 - [ ] T067 [US3] Write integration test: cache server with domain_locking=true rejects external domain requests with 403, allows home_domain and allowlisted domains in crates/open-tethyr/tests/integration_policy.rs
 
@@ -159,7 +159,7 @@
 
 ### Implementation for User Story 4
 
-- [ ] T070 [US4] Implement OpenTethyr client struct (domain, cache_url, http_client, dns_discovery); new() with automatic DNS cache discovery; discover() trying cache then direct; discover_with_cache() for explicit cache URL in crates/open-tethyr/src/client.rs
+- [x] T070 [US4] Implement OpenTethyr client struct (domain, cache_url, http_client, dns_discovery); new() with automatic DNS cache discovery; discover() trying cache then direct; discover_with_cache() for explicit cache URL in crates/open-tethyr/src/client.rs
 - [ ] T071 [US4] Write integration test: OpenTethyr client with mock DNS returning cache endpoint routes requests to cache (wiremock); client with no DNS record falls back to direct fetch; client with unreachable cache falls back to direct in crates/open-tethyr/tests/integration_client.rs
 
 **Checkpoint**: User Story 4 complete - developers can use the client SDK for agent discovery.
@@ -174,7 +174,7 @@
 
 ### Implementation for User Story 5
 
-- [ ] T072 [US5] Implement DiscoverCommand with clap Args: positional DOMAIN, --cache (optional URL), --direct (skip cache), --json (JSON output), --timeout (default 30s); execute() uses OpenTethyr client or direct fetch, formats output in crates/cli/src/commands/discover.rs
+- [x] T072 [US5] Implement DiscoverCommand with clap Args: positional DOMAIN, --cache (optional URL), --direct (skip cache), --json (JSON output), --timeout (default 30s); execute() uses OpenTethyr client or direct fetch, formats output in crates/cli/src/commands/discover.rs
 - [ ] T073 [US5] Write CLI integration test: discover command with mock AX endpoint (wiremock) displays agent names and endpoints; --json flag outputs valid JSON; --cache flag routes through specified cache URL; domain with no AX records reports "no agents found" in crates/cli/tests/test_discover.rs
 
 **Checkpoint**: User Story 5 complete - administrators can test discovery end-to-end via CLI.
