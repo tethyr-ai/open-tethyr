@@ -112,19 +112,19 @@
 
 ### Tests for User Story 3
 
-- [ ] T042 [P] [US3] Write property test (Property 4): cache-first discovery - when cache has entry, no external fetch occurs in crates/open-tethyr/tests/property_cache_first.rs
-- [ ] T043 [P] [US3] Write property test (Property 5): cache miss fallback - on miss, system fetches from correct AX endpoint and validates response path in crates/open-tethyr/tests/property_cache_miss.rs
-- [ ] T044 [P] [US3] Write property test (Property 7): TTL expiration - expired records not returned, trigger re-fetch; non-expired served from cache in crates/open-tethyr/tests/property_ttl.rs
-- [ ] T045 [P] [US3] Write property test (Property 15): LRU eviction - at max capacity, least recently used evicted, most recently accessed preserved in crates/open-tethyr/tests/property_lru.rs
-- [ ] T046 [P] [US3] Write property test (Property 26): cache size limit enforcement - cache never exceeds max_entries in crates/open-tethyr/tests/property_cache_size.rs
-- [ ] T047 [P] [US3] Write property test (Property 16): Cache-Control header compliance - respects max-age and no-cache directives in crates/open-tethyr/tests/property_cache_control.rs
-- [ ] T048 [P] [US3] Write property test (Property 11): hierarchical cache fallback chain - local miss -> root -> direct, upstream failure falls back gracefully in crates/open-tethyr/tests/property_hierarchy.rs
-- [ ] T049 [P] [US3] Write property test (Property 12): circular dependency prevention - cyclic cache configs detected and rejected at startup in crates/open-tethyr/tests/property_circular.rs
-- [ ] T050 [P] [US3] Write property test (Property 6): domain locking policy enforcement - locked domain rejects external requests, allowlisted domains permitted in crates/open-tethyr/tests/property_policy.rs
-- [ ] T051 [P] [US3] Write property test (Property 21): rate limiting enforcement - exceeding limit returns rejection, tokens refill over time in crates/open-tethyr/tests/property_rate_limit.rs
-- [ ] T052 [P] [US3] Write property test (Property 23): HTTP error response mapping - PolicyViolation->403, RateLimitExceeded->429, NotFound->404, upstream failure->502 in crates/open-tethyr/tests/property_error_responses.rs
-- [ ] T053 [P] [US3] Write property test (Property 22): request timeout handling - external fetches timeout after configured duration in crates/open-tethyr/tests/property_timeout.rs
-- [ ] T054 [P] [US3] Write property test (Property 14): HTTPS certificate validation - invalid certificates rejected in crates/open-tethyr/tests/property_https.rs
+- [x] T042 [P] [US3] Write property test (Property 4): cache-first discovery - when cache has entry, no external fetch occurs in crates/open-tethyr/tests/property_cache_first.rs
+- [x] T043 [P] [US3] Write property test (Property 5): cache miss fallback - on miss, system fetches from correct AX endpoint and validates response path in crates/open-tethyr/tests/property_cache_miss.rs
+- [x] T044 [P] [US3] Write property test (Property 7): TTL expiration - expired records not returned, trigger re-fetch; non-expired served from cache in crates/open-tethyr/tests/property_ttl.rs
+- [x] T045 [P] [US3] Write property test (Property 15): LRU eviction - at max capacity, least recently used evicted, most recently accessed preserved in crates/open-tethyr/tests/property_lru.rs
+- [x] T046 [P] [US3] Write property test (Property 26): cache size limit enforcement - cache never exceeds max_entries in crates/open-tethyr/tests/property_cache_size.rs
+- [x] T047 [P] [US3] Write property test (Property 16): Cache-Control header compliance - respects max-age and no-cache directives in crates/open-tethyr/tests/property_cache_control.rs
+- [x] T048 [P] [US3] Write property test (Property 11): hierarchical cache fallback chain - local miss -> root -> direct, upstream failure falls back gracefully in crates/open-tethyr/tests/property_hierarchy.rs
+- [x] T049 [P] [US3] Write property test (Property 12): circular dependency prevention - cyclic cache configs detected and rejected at startup in crates/open-tethyr/tests/property_circular.rs
+- [x] T050 [P] [US3] Write property test (Property 6): domain locking policy enforcement - locked domain rejects external requests, allowlisted domains permitted in crates/open-tethyr/tests/property_policy.rs
+- [x] T051 [P] [US3] Write property test (Property 21): rate limiting enforcement - exceeding limit returns rejection, tokens refill over time in crates/open-tethyr/tests/property_rate_limit.rs
+- [x] T052 [P] [US3] Write property test (Property 23): HTTP error response mapping - PolicyViolation->403, RateLimitExceeded->429, NotFound->404, upstream failure->502 in crates/open-tethyr/tests/property_error_responses.rs
+- [x] T053 [P] [US3] Write property test (Property 22): request timeout handling - external fetches timeout after configured duration in crates/open-tethyr/tests/property_timeout.rs
+- [x] T054 [P] [US3] Write property test (Property 14): HTTPS certificate validation - invalid certificates rejected in crates/open-tethyr/tests/property_https.rs
 
 ### Implementation for User Story 3
 

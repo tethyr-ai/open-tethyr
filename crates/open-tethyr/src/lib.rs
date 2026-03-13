@@ -24,8 +24,8 @@
 //! #[tokio::main]
 //! async fn main() -> Result<(), Box<dyn std::error::Error>> {
 //!     let client = OpenTethyr::new("acme.com")?;
-//!     let agents = client.discover("api.partner.com").await?;
-//!     println!("Found {} agents", agents.len());
+//!     let doc = client.discover("api.partner.com").await?;
+//!     println!("Found {} agents", doc.records.len());
 //!     Ok(())
 //! }
 //! ```
