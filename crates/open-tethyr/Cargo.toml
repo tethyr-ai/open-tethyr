@@ -28,6 +28,7 @@ tracing = { workspace = true }
 anyhow = { workspace = true }
 thiserror = { workspace = true }
 uuid = { workspace = true }
+regex-lite = "0.1"
 
 # Server-only dependencies (optional)
 axum = { workspace = true, optional = true }

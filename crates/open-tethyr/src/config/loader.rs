@@ -1,8 +1,13 @@
 //! Configuration Loading
-//!
-//! Placeholder for YAML configuration loading.
 
-/// Configuration loader for YAML files
-pub struct ConfigLoader {
-    // Implementation will be added in task 4.1
+use crate::error::ConfigError;
+use super::models::AgentConfig;
+use std::path::Path;
+
+/// Load configuration from a YAML file
+pub fn load_config(path: &Path) -> Result<AgentConfig, ConfigError> {
+    let content = std::fs::read_to_string(path)
+        .map_err(|e| ConfigError::ParseError(format!("Failed to read {}: {}", path.display(), e)))?;
+    serde_yaml::from_str(&content)
+        .map_err(|e| ConfigError::ParseError(format!("YAML parse error: {}", e)))
 }

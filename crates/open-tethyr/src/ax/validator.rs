@@ -1,87 +1,187 @@
 //! AX Record Validation
-//!
-//! Validation logic for AX protocol compliance.
 
 use super::{Agent, AgentExchangeRecord, Endpoint};
+use crate::error::{AxError, APPROVED_AUTH_METHODS};
 
-/// AX protocol validation errors
-#[derive(Debug, thiserror::Error)]
-pub enum ValidationError {
-    #[error("Invalid record type: {0}, expected 'AX'")]
-    InvalidRecordType(String),
+/// Severity level for validation items
+#[derive(Debug, Clone, PartialEq)]
+pub enum Severity {
+    Error,
+    Warning,
+}
 
-    #[error("Unsupported version: {0}")]
-    UnsupportedVersion(String),
+/// A single validation finding
+#[derive(Debug, Clone)]
+pub struct ValidationItem {
+    pub severity: Severity,
+    pub field: String,
+    pub message: String,
+}
 
-    #[error("Missing required field: {0}")]
-    MissingField(String),
+/// Validation report containing all findings
+#[derive(Debug, Clone, Default)]
+pub struct ValidationReport {
+    pub items: Vec<ValidationItem>,
+}
 
-    #[error("Invalid format: {0}")]
-    InvalidFormat(String),
+impl ValidationReport {
+    pub fn has_errors(&self) -> bool {
+        self.items.iter().any(|i| i.severity == Severity::Error)
+    }
+
+    pub fn errors(&self) -> Vec<&ValidationItem> {
+        self.items.iter().filter(|i| i.severity == Severity::Error).collect()
+    }
+
+    pub fn warnings(&self) -> Vec<&ValidationItem> {
+        self.items.iter().filter(|i| i.severity == Severity::Warning).collect()
+    }
 }
 
 /// AX record validator
 pub struct AxValidator;
 
 impl AxValidator {
-    /// Validate an AX record for compliance
-    pub fn validate_record(record: &AgentExchangeRecord) -> Result<(), ValidationError> {
-        // Validate record_type is "AX"
+    /// Validate an AX record, returning a detailed report
+    pub fn validate_record_detailed(record: &AgentExchangeRecord) -> ValidationReport {
+        let mut report = ValidationReport::default();
+
+        // Validate record_type
         if record.record_type != "AX" {
-            return Err(ValidationError::InvalidRecordType(
-                record.record_type.clone(),
-            ));
+            report.items.push(ValidationItem {
+                severity: Severity::Error,
+                field: "record_type".to_string(),
+                message: format!("Expected 'AX', got '{}'", record.record_type),
+            });
         }
 
-        // Validate version is supported
-        Self::validate_version(&record.version)?;
+        // Validate version
+        if record.version != "1.0" {
+            report.items.push(ValidationItem {
+                severity: Severity::Warning,
+                field: "version".to_string(),
+                message: format!("Unsupported version '{}', expected '1.0'", record.version),
+            });
+        }
 
-        // Validate agent and endpoints
+        // Validate agent
+        if record.agent.name.is_empty() {
+            report.items.push(ValidationItem {
+                severity: Severity::Error,
+                field: "agent.name".to_string(),
+                message: "Agent name is required".to_string(),
+            });
+        }
+        if record.agent.description.is_empty() {
+            report.items.push(ValidationItem {
+                severity: Severity::Error,
+                field: "agent.description".to_string(),
+                message: "Agent description is required".to_string(),
+            });
+        }
+        if record.agent.provider.is_empty() {
+            report.items.push(ValidationItem {
+                severity: Severity::Error,
+                field: "agent.provider".to_string(),
+                message: "Agent provider is required".to_string(),
+            });
+        }
+
+        // Validate endpoints
+        if record.endpoints.is_empty() {
+            report.items.push(ValidationItem {
+                severity: Severity::Error,
+                field: "endpoints".to_string(),
+                message: "At least one endpoint is required".to_string(),
+            });
+        }
+
+        for (i, ep) in record.endpoints.iter().enumerate() {
+            if ep.url.is_empty() {
+                report.items.push(ValidationItem {
+                    severity: Severity::Error,
+                    field: format!("endpoints[{}].url", i),
+                    message: "Endpoint URL is required".to_string(),
+                });
+            }
+            if ep.auth.is_empty() {
+                report.items.push(ValidationItem {
+                    severity: Severity::Error,
+                    field: format!("endpoints[{}].auth", i),
+                    message: "Endpoint auth methods are required".to_string(),
+                });
+            }
+            // Validate auth methods against approved set
+            for method in &ep.auth {
+                if !APPROVED_AUTH_METHODS.contains(&method.as_str()) {
+                    report.items.push(ValidationItem {
+                        severity: Severity::Error,
+                        field: format!("endpoints[{}].auth", i),
+                        message: format!(
+                            "Invalid auth method '{}': must be one of {:?}",
+                            method, APPROVED_AUTH_METHODS
+                        ),
+                    });
+                }
+            }
+        }
+
+        report
+    }
+
+    /// Simple validation returning Result (for backward compat)
+    pub fn validate_record(record: &AgentExchangeRecord) -> Result<(), AxError> {
+        if record.record_type != "AX" {
+            return Err(AxError::InvalidRecordType(record.record_type.clone()));
+        }
+        Self::validate_version(&record.version)?;
         Self::validate_agent(&record.agent)?;
         Self::validate_endpoints(&record.endpoints)?;
-
         Ok(())
     }
 
-    /// Validate agent structure
-    pub fn validate_agent(agent: &Agent) -> Result<(), ValidationError> {
+    pub fn validate_agent(agent: &Agent) -> Result<(), AxError> {
         if agent.name.is_empty() {
-            return Err(ValidationError::MissingField("agent.name".to_string()));
+            return Err(AxError::MissingField("agent.name".into()));
         }
         if agent.description.is_empty() {
-            return Err(ValidationError::MissingField(
-                "agent.description".to_string(),
-            ));
+            return Err(AxError::MissingField("agent.description".into()));
         }
         if agent.provider.is_empty() {
-            return Err(ValidationError::MissingField("agent.provider".to_string()));
+            return Err(AxError::MissingField("agent.provider".into()));
         }
         Ok(())
     }
 
-    /// Validate version compatibility
-    pub fn validate_version(version: &str) -> Result<(), ValidationError> {
+    pub fn validate_version(version: &str) -> Result<(), AxError> {
         match version {
             "1.0" => Ok(()),
-            _ => Err(ValidationError::UnsupportedVersion(version.to_string())),
+            _ => Err(AxError::UnsupportedVersion(version.to_string())),
         }
     }
 
-    /// Validate endpoints
-    pub fn validate_endpoints(endpoints: &[Endpoint]) -> Result<(), ValidationError> {
+    pub fn validate_endpoints(endpoints: &[Endpoint]) -> Result<(), AxError> {
         if endpoints.is_empty() {
-            return Err(ValidationError::MissingField("endpoints".to_string()));
+            return Err(AxError::MissingField("endpoints".into()));
         }
-
-        for endpoint in endpoints {
-            if endpoint.url.is_empty() {
-                return Err(ValidationError::MissingField("endpoint.url".to_string()));
+        for ep in endpoints {
+            if ep.url.is_empty() {
+                return Err(AxError::MissingField("endpoint.url".into()));
             }
-            if endpoint.auth.is_empty() {
-                return Err(ValidationError::MissingField("endpoint.auth".to_string()));
+            if ep.auth.is_empty() {
+                return Err(AxError::MissingField("endpoint.auth".into()));
+            }
+            Self::validate_auth_methods(&ep.auth)?;
+        }
+        Ok(())
+    }
+
+    pub fn validate_auth_methods(methods: &[String]) -> Result<(), AxError> {
+        for method in methods {
+            if !APPROVED_AUTH_METHODS.contains(&method.as_str()) {
+                return Err(AxError::InvalidAuthMethod(method.clone()));
             }
         }
-
         Ok(())
     }
 }

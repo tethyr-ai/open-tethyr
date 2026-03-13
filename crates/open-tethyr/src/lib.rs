@@ -38,6 +38,7 @@ pub mod ax;
 pub mod cache;
 pub mod config;
 pub mod dns;
+pub mod error;
 pub mod http;
 
 // Client SDK (default feature)

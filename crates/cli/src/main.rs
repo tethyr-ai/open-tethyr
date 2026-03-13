@@ -7,8 +7,8 @@ use clap::{Parser, Subcommand};
 mod commands;
 
 use commands::{
-    discover::DiscoverCommand, generate::GenerateCommand, serve::ServeCommand,
-    validate::ValidateCommand,
+    cache_invalidate::CacheInvalidateCommand, discover::DiscoverCommand,
+    generate::GenerateCommand, serve::ServeCommand, validate::ValidateCommand,
 };
 
 #[derive(Parser)]
@@ -30,6 +30,8 @@ pub enum Commands {
     Discover(DiscoverCommand),
     /// Start cache server
     Serve(ServeCommand),
+    /// Invalidate cache entries
+    CacheInvalidate(CacheInvalidateCommand),
 }
 
 #[tokio::main]
@@ -44,6 +46,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Commands::Validate(cmd) => cmd.execute().await?,
         Commands::Discover(cmd) => cmd.execute().await?,
         Commands::Serve(cmd) => cmd.execute().await?,
+        Commands::CacheInvalidate(cmd) => cmd.execute().await?,
     }
 
     Ok(())
