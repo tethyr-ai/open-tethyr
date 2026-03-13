@@ -1,36 +1,79 @@
-//! Main cache server implementation
+//! Main Cache Server
 
-/// Cache server configuration
-#[derive(Debug, Clone)]
-pub struct ServerConfig {
-    pub bind_address: String,
-    pub domain: String,
-}
+use axum::Router;
+use axum::routing::get;
+use std::net::SocketAddr;
+use std::sync::Arc;
 
-/// Cache server errors
-#[derive(Debug, thiserror::Error)]
-pub enum ServerError {
-    #[error("Server startup failed: {0}")]
-    StartupFailed(String),
+use crate::cache::coordinator::CacheCoordinator;
+use crate::cache::stats::CacheStats;
+use crate::config::ServerConfig;
+use crate::error::ServerError;
+use super::handlers;
+use super::middleware::CorrelationIdLayer;
+use super::policy::PolicyEngine;
 
-    #[error("Configuration error: {0}")]
-    ConfigError(String),
+/// Shared application state
+pub struct AppState {
+    pub coordinator: CacheCoordinator,
+    pub policy: PolicyEngine,
+    pub stats: CacheStats,
 }
 
 /// Main cache server
-#[allow(dead_code)] // Temporary: field will be used in task 11
 pub struct CacheServer {
     config: ServerConfig,
+    state: Arc<AppState>,
 }
 
 impl CacheServer {
-    /// Create a new cache server
     pub async fn new(config: ServerConfig) -> Result<Self, ServerError> {
-        Ok(Self { config })
+        let policy = PolicyEngine::new(
+            config.policy.domain_locking,
+            config.policy.home_domain.clone(),
+            config.policy.allowlist.clone(),
+        );
+
+        let coordinator = CacheCoordinator::new(
+            config.cache.max_entries,
+            config.cache.default_ttl,
+            None, // Root cache URL discovered via DNS at runtime
+        ).map_err(|e| ServerError::StartupFailed(e.to_string()))?;
+
+        let state = Arc::new(AppState {
+            coordinator,
+            policy,
+            stats: CacheStats::new(),
+        });
+
+        Ok(Self { config, state })
+    }
+
+    /// Build the router
+    pub fn build_routes(state: Arc<AppState>) -> Router {
+        Router::new()
+            .route("/discover/{domain}", get(handlers::handle_discover))
+            .route("/health", get(handlers::handle_health))
+            .route("/metrics", get(handlers::handle_metrics))
+            .layer(CorrelationIdLayer)
+            .with_state(state)
     }
 
     /// Start the cache server
     pub async fn start(&self) -> Result<(), ServerError> {
-        todo!("Implementation will be added in task 11")
+        let router = Self::build_routes(self.state.clone());
+        let addr: SocketAddr = format!("0.0.0.0:{}", self.config.port)
+            .parse()
+            .map_err(|e| ServerError::StartupFailed(format!("Invalid address: {}", e)))?;
+
+        tracing::info!("Cache server starting on {}", addr);
+
+        let listener = tokio::net::TcpListener::bind(addr).await
+            .map_err(|e| ServerError::StartupFailed(e.to_string()))?;
+
+        axum::serve(listener, router).await
+            .map_err(|e| ServerError::StartupFailed(e.to_string()))?;
+
+        Ok(())
     }
 }
