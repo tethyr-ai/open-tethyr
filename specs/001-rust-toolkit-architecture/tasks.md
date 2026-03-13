@@ -78,7 +78,7 @@
 
 - [x] T035 [US1] Implement GenerateCommand with clap Args: --config (PathBuf, required), --output (PathBuf, required), --validate (bool flag); execute() loads YAML config via ConfigMerger, generates via AxGenerator, optionally validates via AxValidator, writes via FileWriter in crates/cli/src/commands/generate.rs
 - [x] T036 [US1] Implement basic ValidateCommand with clap Args: positional path to AX JSON file; execute() reads file, parses JSON, runs AxValidator::validate_record() on each record, reports errors to stderr with field paths in crates/cli/src/commands/validate.rs (Note: provides minimal validate for --validate flag in generate; US2 enhances this with detailed reporting)
-- [ ] T037 [US1] Write CLI integration test: generate command produces valid AX JSON from sample YAML config, validate command passes on generated output, validate command fails on intentionally invalid input in crates/cli/tests/test_generate_validate.rs
+- [x] T037 [US1] Write CLI integration test: generate command produces valid AX JSON from sample YAML config, validate command passes on generated output, validate command fails on intentionally invalid input in crates/cli/tests/test_generate_validate.rs
 
 **Checkpoint**: User Story 1 complete - administrators can generate and validate AX records via CLI.
 
@@ -98,7 +98,7 @@
 
 - [x] T039 [US2] Enhance AxValidator to produce detailed ValidationReport with per-field error paths, severity levels (error vs warning), and human-readable messages for: missing required fields, invalid record_type, unsupported version (warning), invalid auth methods, empty endpoints in crates/open-tethyr/src/ax/validator.rs
 - [x] T040 [US2] Enhance ValidateCommand output formatting: summary line for valid records, itemized error list for invalid records with field path and description, exit code 0 for valid / 3 for invalid in crates/cli/src/commands/validate.rs
-- [ ] T041 [US2] Write integration test: validate command with valid AX record exits 0, with missing agent.name exits 3, with version "2.0" shows warning, with auth ["INVALID"] reports error in crates/cli/tests/test_validate_detailed.rs
+- [x] T041 [US2] Write integration test: validate command with valid AX record exits 0, with missing agent.name exits 3, with version "2.0" shows warning, with auth ["INVALID"] reports error in crates/cli/tests/test_validate_detailed.rs
 
 **Checkpoint**: User Story 2 complete - integrators can validate any AX record with detailed error reporting.
 
@@ -139,8 +139,8 @@
 - [x] T063 [US3] Implement ServerError IntoResponse mapping: PolicyViolation->403, RateLimitExceeded->429, CacheError::NotFound->404, upstream failures->502; JSON body with error message, timestamp, correlation_id in crates/open-tethyr/src/server/cache_server.rs
 - [x] T064 [US3] Implement CacheMetrics with AtomicU64 hit/miss counters, SimpleHistogram for request duration (buckets: 1ms, 5ms, 10ms, 50ms, 100ms, 500ms, 1s, 5s), AtomicU32 active_connections in crates/open-tethyr/src/server/handlers.rs
 - [x] T065 [US3] Implement ServeCommand with clap Args: --domain, --port (default 8080), --config (optional YAML path), --max-entries (default 10000), --ttl (default 3600); execute() builds ServerConfig, starts CacheServer in crates/cli/src/commands/serve.rs
-- [ ] T066 [US3] Write integration test: start cache server, send discovery request via HTTP, verify cache miss triggers upstream fetch (wiremock), second request hits cache, verify /health and /metrics endpoints respond correctly in crates/open-tethyr/tests/integration_server.rs
-- [ ] T067 [US3] Write integration test: cache server with domain_locking=true rejects external domain requests with 403, allows home_domain and allowlisted domains in crates/open-tethyr/tests/integration_policy.rs
+- [x] T066 [US3] Write integration test: start cache server, send discovery request via HTTP, verify cache miss triggers upstream fetch (wiremock), second request hits cache, verify /health and /metrics endpoints respond correctly in crates/open-tethyr/tests/integration_server.rs
+- [x] T067 [US3] Write integration test: cache server with domain_locking=true rejects external domain requests with 403, allows home_domain and allowlisted domains in crates/open-tethyr/tests/integration_policy.rs
 
 **Checkpoint**: User Story 3 complete - operators can deploy cache server with full caching, policy enforcement, rate limiting, and observability.
 
@@ -160,7 +160,7 @@
 ### Implementation for User Story 4
 
 - [x] T070 [US4] Implement OpenTethyr client struct (domain, cache_url, http_client, dns_discovery); new() with automatic DNS cache discovery; discover() trying cache then direct; discover_with_cache() for explicit cache URL in crates/open-tethyr/src/client.rs
-- [ ] T071 [US4] Write integration test: OpenTethyr client with mock DNS returning cache endpoint routes requests to cache (wiremock); client with no DNS record falls back to direct fetch; client with unreachable cache falls back to direct in crates/open-tethyr/tests/integration_client.rs
+- [x] T071 [US4] Write integration test: OpenTethyr client with mock DNS returning cache endpoint routes requests to cache (wiremock); client with no DNS record falls back to direct fetch; client with unreachable cache falls back to direct in crates/open-tethyr/tests/integration_client.rs
 
 **Checkpoint**: User Story 4 complete - developers can use the client SDK for agent discovery.
 
@@ -175,7 +175,7 @@
 ### Implementation for User Story 5
 
 - [x] T072 [US5] Implement DiscoverCommand with clap Args: positional DOMAIN, --cache (optional URL), --direct (skip cache), --json (JSON output), --timeout (default 30s); execute() uses OpenTethyr client or direct fetch, formats output in crates/cli/src/commands/discover.rs
-- [ ] T073 [US5] Write CLI integration test: discover command with mock AX endpoint (wiremock) displays agent names and endpoints; --json flag outputs valid JSON; --cache flag routes through specified cache URL; domain with no AX records reports "no agents found" in crates/cli/tests/test_discover.rs
+- [x] T073 [US5] Write CLI integration test: discover command with mock AX endpoint (wiremock) displays agent names and endpoints; --json flag outputs valid JSON; --cache flag routes through specified cache URL; domain with no AX records reports "no agents found" in crates/cli/tests/test_discover.rs
 
 **Checkpoint**: User Story 5 complete - administrators can test discovery end-to-end via CLI.
 
@@ -221,7 +221,7 @@
 
 - [ ] T082 Write workspace-level integration test: full end-to-end flow - generate AX records from YAML config, validate them, start cache server, discover through cache, verify correctness in tests/integration_e2e.rs
 - [ ] T083 [P] Write workspace-level integration test: hierarchical cache - start root cache (wiremock), start regional cache pointing to root, verify fallback chain (local -> root -> direct) and graceful degradation when root unavailable in tests/integration_hierarchy.rs
-- [ ] T084 [P] Write workspace-level integration test: OAuth provider templates integrated with generation - YAML config referencing Okta/Auth0 providers generates AX records with correct security.oauth endpoints in tests/integration_oauth.rs
+- [x] T084 [P] Write workspace-level integration test: OAuth provider templates integrated with generation - YAML config referencing Okta/Auth0 providers generates AX records with correct security.oauth endpoints in tests/integration_oauth.rs
 - [ ] T085 [P] Write concurrency load test: spawn 1,000 concurrent tokio tasks each sending a discovery request to the cache server (wiremock upstream), verify all requests complete without errors or panics (validates SC-003) in tests/integration_concurrency.rs
 - [ ] T086 [P] Add criterion benchmarks for success criteria timing validation: bench_dns_discovery_with_fallback (SC-004 <2s), bench_hierarchical_fallback_chain (SC-006 <5s), bench_server_cold_start (SC-008 <3s), bench_cli_validate (SC-009 <500ms) in crates/open-tethyr/benches/timing_benchmarks.rs
 - [ ] T087 Run quickstart.md validation: execute each quickstart scenario and verify expected outcomes
