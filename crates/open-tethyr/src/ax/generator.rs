@@ -1,36 +1,40 @@
-//! AX Record Generation
+//! AX Record Generation - produces flat AX documents per spec
 
-use super::{Agent, AgentExchangeDocument, AgentExchangeRecord, Endpoint, Protocol, Security};
+use super::{Agent, AgentExchangeRecord, Endpoint, Protocol, Security};
 use crate::auth::ProviderRegistry;
 use crate::config::{AgentConfig, AgentDefinition, ConfigMerger};
 use crate::error::AxError;
 use crate::http::file_writer::{FileWriter, WellKnownFiles};
 use std::path::Path;
 
-/// AX record generator
 pub struct AxGenerator;
 
 impl AxGenerator {
-    /// Generate AX document from configuration
-    pub fn generate_record(config: &AgentConfig) -> Result<AgentExchangeDocument, AxError> {
-        let merged_agents = ConfigMerger::merge_all(config);
+    /// Generate a single AX record from the first agent in config (flat per spec)
+    pub fn generate_record(config: &AgentConfig) -> Result<AgentExchangeRecord, AxError> {
+        let merged = ConfigMerger::merge_all(config);
         let registry = ProviderRegistry::new();
-        let mut records = Vec::new();
-
-        for agent_def in &merged_agents {
-            let record = Self::agent_to_record(agent_def, &registry)?;
-            records.push(record);
-        }
-
-        Ok(AgentExchangeDocument { records })
+        let agent_def = merged
+            .first()
+            .ok_or_else(|| AxError::GenerationFailed("No agents in config".into()))?;
+        Self::agent_to_record(agent_def, &registry)
     }
 
-    /// Generate well-known file structure from document
+    /// Generate all records (for multi-agent configs)
+    pub fn generate_all_records(config: &AgentConfig) -> Result<Vec<AgentExchangeRecord>, AxError> {
+        let merged = ConfigMerger::merge_all(config);
+        let registry = ProviderRegistry::new();
+        merged
+            .iter()
+            .map(|a| Self::agent_to_record(a, &registry))
+            .collect()
+    }
+
     pub fn generate_well_known_structure(
-        doc: &AgentExchangeDocument,
+        record: &AgentExchangeRecord,
         output_dir: &Path,
     ) -> Result<WellKnownFiles, AxError> {
-        FileWriter::write_structure(doc, output_dir)
+        FileWriter::write_structure(record, output_dir)
     }
 
     fn agent_to_record(
@@ -58,16 +62,21 @@ impl AxGenerator {
                     url: ep.url.clone(),
                     auth,
                     content_type: ep.content_type.clone(),
+                    extra: Default::default(),
                 }
             })
             .collect();
 
+        // OAuth providers now populate flat security.issuer + security.jwks_url
         let security = if let (Some(provider), Some(domain)) =
             (&agent_def.oauth_provider, &agent_def.oauth_domain)
         {
             match registry.generate_oauth_config(provider, domain) {
-                Ok(oauth) => Some(Security {
-                    oauth: Some(oauth),
+                Ok((issuer, jwks_url)) => Some(Security {
+                    issuer: Some(issuer),
+                    jwks_url: Some(jwks_url),
+                    signature: None,
+                    metadata_signature: None,
                     extra: Default::default(),
                 }),
                 Err(e) => return Err(AxError::GenerationFailed(e.to_string())),
@@ -77,12 +86,12 @@ impl AxGenerator {
         };
 
         Ok(AgentExchangeRecord {
-            record_type: "AX".to_string(),
-            version: "1.0".to_string(),
+            record_type: "AX".into(),
+            version: "1.0".into(),
             agent: Agent {
                 name: agent_def.name.clone(),
                 description: agent_def.description.clone(),
-                provider: agent_def.provider.clone().unwrap_or_default(),
+                provider: agent_def.provider.clone(),
             },
             endpoints,
             capabilities: None,

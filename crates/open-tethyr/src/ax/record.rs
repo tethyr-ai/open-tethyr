@@ -1,9 +1,9 @@
-//! AX Record Data Structures
+//! AX Record Data Structures - aligned with official AX draft spec
 
 use super::types::{Capabilities, Endpoint, Limits, Schema, Security};
 use serde::{Deserialize, Serialize};
 
-/// AX record data structure following AX 1.0 specification
+/// AX document (single flat record per spec)
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct AgentExchangeRecord {
     #[serde(default = "default_record_type")]
@@ -31,16 +31,28 @@ fn default_version() -> String {
     "1.0".to_string()
 }
 
-/// Agent definition
+/// Agent definition - provider is optional per spec
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Agent {
     pub name: String,
     pub description: String,
-    pub provider: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub provider: Option<String>,
 }
 
-/// Container for multiple AX records
+/// Legacy wrapper format for backward compatibility
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct AgentExchangeDocument {
     pub records: Vec<AgentExchangeRecord>,
+}
+
+/// Parse AX JSON that could be either flat (spec) or legacy wrapper
+pub fn parse_ax_json(json: &str) -> Result<Vec<AgentExchangeRecord>, serde_json::Error> {
+    // Try flat document first (spec-compliant)
+    if let Ok(record) = serde_json::from_str::<AgentExchangeRecord>(json) {
+        return Ok(vec![record]);
+    }
+    // Fall back to legacy wrapper
+    let doc: AgentExchangeDocument = serde_json::from_str(json)?;
+    Ok(doc.records)
 }

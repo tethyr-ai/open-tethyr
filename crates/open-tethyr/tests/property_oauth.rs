@@ -1,54 +1,33 @@
-//! Property 9: OAuth Provider Template Correctness
-
 use open_tethyr::auth::*;
 
 #[test]
-fn okta_generates_valid_endpoints() {
-    let provider = OktaProvider;
-    let eps = provider.generate_endpoints("dev-123.okta.com").unwrap();
-    assert_eq!(eps.issuer.unwrap(), "https://dev-123.okta.com");
-    assert!(eps.authorization_endpoint.unwrap().starts_with("https://"));
-    assert!(eps.token_endpoint.unwrap().contains("/oauth2/token"));
-    assert!(eps.jwks_uri.unwrap().contains("/oauth2/v1/keys"));
-    assert!(eps
-        .userinfo_endpoint
-        .unwrap()
-        .contains("/oauth2/v1/userinfo"));
-    assert!(eps
-        .revocation_endpoint
-        .unwrap()
-        .contains("/oauth2/v1/revoke"));
+fn okta_returns_issuer_and_jwks() {
+    let (issuer, jwks) = OktaProvider.generate_endpoints("dev.okta.com").unwrap();
+    assert_eq!(issuer, "https://dev.okta.com");
+    assert!(jwks.contains("keys"));
 }
 
 #[test]
-fn auth0_generates_valid_endpoints() {
-    let provider = Auth0Provider;
-    let eps = provider.generate_endpoints("tenant.auth0.com").unwrap();
-    assert_eq!(eps.issuer.unwrap(), "https://tenant.auth0.com/");
-    assert!(eps.authorization_endpoint.unwrap().contains("/authorize"));
-    assert!(eps.token_endpoint.unwrap().contains("/oauth/token"));
-    assert!(eps.jwks_uri.unwrap().contains("/.well-known/jwks.json"));
+fn auth0_returns_issuer_and_jwks() {
+    let (issuer, jwks) = Auth0Provider.generate_endpoints("t.auth0.com").unwrap();
+    assert_eq!(issuer, "https://t.auth0.com/");
+    assert!(jwks.contains("jwks.json"));
 }
 
 #[test]
-fn generic_generates_valid_endpoints() {
-    let provider = GenericOAuth2Provider;
-    let eps = provider.generate_endpoints("auth.example.com").unwrap();
-    assert!(eps.issuer.unwrap().starts_with("https://"));
-    assert!(eps.token_endpoint.unwrap().contains("/token"));
+fn generic_returns_issuer_and_jwks() {
+    let (issuer, jwks) = GenericOAuth2Provider
+        .generate_endpoints("auth.example.com")
+        .unwrap();
+    assert!(issuer.starts_with("https://"));
+    assert!(jwks.contains("jwks.json"));
 }
 
 #[test]
 fn registry_finds_providers() {
-    let registry = ProviderRegistry::new();
-    assert!(registry
-        .generate_oauth_config("okta", "test.okta.com")
-        .is_ok());
-    assert!(registry
-        .generate_oauth_config("auth0", "test.auth0.com")
-        .is_ok());
-    assert!(registry
-        .generate_oauth_config("generic", "auth.example.com")
-        .is_ok());
-    assert!(registry.generate_oauth_config("unknown", "x.com").is_err());
+    let r = ProviderRegistry::new();
+    assert!(r.generate_oauth_config("okta", "t.com").is_ok());
+    assert!(r.generate_oauth_config("auth0", "t.com").is_ok());
+    assert!(r.generate_oauth_config("generic", "t.com").is_ok());
+    assert!(r.generate_oauth_config("unknown", "t.com").is_err());
 }

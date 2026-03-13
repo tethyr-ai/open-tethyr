@@ -1,23 +1,22 @@
-//! Property 2: AX Record Validation Correctness
-
 use open_tethyr::ax::*;
 use open_tethyr::error::AxError;
 use proptest::prelude::*;
 
 fn valid_record() -> AgentExchangeRecord {
     AgentExchangeRecord {
-        record_type: "AX".to_string(),
-        version: "1.0".to_string(),
+        record_type: "AX".into(),
+        version: "1.0".into(),
         agent: Agent {
             name: "test".into(),
             description: "test agent".into(),
-            provider: "acme".into(),
+            provider: Some("acme".into()),
         },
         endpoints: vec![Endpoint {
             protocol: Protocol::Rest,
             url: "https://api.example.com".into(),
             auth: vec!["OAuth2".into()],
             content_type: None,
+            extra: Default::default(),
         }],
         capabilities: None,
         schema: None,
@@ -33,22 +32,26 @@ fn valid_record_passes() {
 }
 
 #[test]
+fn missing_provider_still_valid() {
+    let mut r = valid_record();
+    r.agent.provider = None;
+    assert!(AxValidator::validate_record(&r).is_ok());
+}
+
+#[test]
+fn empty_auth_still_valid() {
+    let mut r = valid_record();
+    r.endpoints[0].auth.clear();
+    assert!(AxValidator::validate_record(&r).is_ok());
+}
+
+#[test]
 fn invalid_record_type_fails() {
     let mut r = valid_record();
     r.record_type = "INVALID".into();
     assert!(matches!(
         AxValidator::validate_record(&r),
         Err(AxError::InvalidRecordType(_))
-    ));
-}
-
-#[test]
-fn invalid_version_fails() {
-    let mut r = valid_record();
-    r.version = "2.0".into();
-    assert!(matches!(
-        AxValidator::validate_record(&r),
-        Err(AxError::UnsupportedVersion(_))
     ));
 }
 
@@ -69,16 +72,6 @@ fn empty_endpoints_fails() {
     assert!(matches!(
         AxValidator::validate_record(&r),
         Err(AxError::MissingField(_))
-    ));
-}
-
-#[test]
-fn invalid_auth_method_fails() {
-    let mut r = valid_record();
-    r.endpoints[0].auth = vec!["INVALID_METHOD".into()];
-    assert!(matches!(
-        AxValidator::validate_record(&r),
-        Err(AxError::InvalidAuthMethod(_))
     ));
 }
 

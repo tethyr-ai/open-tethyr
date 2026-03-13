@@ -11,14 +11,14 @@
 
 **Purpose**: Update core types to match the official AX schema. All subsequent tasks depend on these.
 
-- [ ] T001 Update Security struct to flat structure with issuer, jwks_url, signature, metadata_signature fields (remove nested oauth wrapper) with serde flatten for additional properties in crates/open-tethyr/src/ax/types.rs
-- [ ] T002 [P] Update Capabilities struct with typed fields: intents (Vec<String>), async_exec (bool), supports_callbacks (bool), callback_modes (Vec<String>) with serde flatten for additional properties in crates/open-tethyr/src/ax/types.rs
-- [ ] T003 [P] Update Schema struct with typed fields: graphql_schema_url, mcp_manifest_url, rest_openapi_url (Option<String>), introspection (Option<bool>) with serde flatten for additional properties in crates/open-tethyr/src/ax/types.rs
-- [ ] T004 [P] Update Limits struct with typed fields: max_concurrent_tasks, max_task_ttl_seconds, rate_limit_per_minute (Option<f64>) with serde flatten for additional properties in crates/open-tethyr/src/ax/types.rs
-- [ ] T005 Update AgentExchangeRecord: make agent.provider optional (Option<String>), keep endpoints[].auth as Vec<String> but don't require non-empty in crates/open-tethyr/src/ax/record.rs
-- [ ] T006 Add AWS_IAM to APPROVED_AUTH_METHODS list and change validate_auth_methods to warn on unknown methods instead of error in crates/open-tethyr/src/error.rs
-- [ ] T007 Update ax/mod.rs re-exports to remove OAuthEndpoints and add new typed field exports in crates/open-tethyr/src/ax/mod.rs
-- [ ] T008 Verify types compile with `cargo check --workspace --all-features`
+- [x] T001 Update Security struct to flat structure with issuer, jwks_url, signature, metadata_signature fields (remove nested oauth wrapper) with serde flatten for additional properties in crates/open-tethyr/src/ax/types.rs
+- [x] T002 [P] Update Capabilities struct with typed fields: intents (Vec<String>), async_exec (bool), supports_callbacks (bool), callback_modes (Vec<String>) with serde flatten for additional properties in crates/open-tethyr/src/ax/types.rs
+- [x] T003 [P] Update Schema struct with typed fields: graphql_schema_url, mcp_manifest_url, rest_openapi_url (Option<String>), introspection (Option<bool>) with serde flatten for additional properties in crates/open-tethyr/src/ax/types.rs
+- [x] T004 [P] Update Limits struct with typed fields: max_concurrent_tasks, max_task_ttl_seconds, rate_limit_per_minute (Option<f64>) with serde flatten for additional properties in crates/open-tethyr/src/ax/types.rs
+- [x] T005 Update AgentExchangeRecord: make agent.provider optional (Option<String>), keep endpoints[].auth as Vec<String> but don't require non-empty in crates/open-tethyr/src/ax/record.rs
+- [x] T006 Add AWS_IAM to APPROVED_AUTH_METHODS list and change validate_auth_methods to warn on unknown methods instead of error in crates/open-tethyr/src/error.rs
+- [x] T007 Update ax/mod.rs re-exports to remove OAuthEndpoints and add new typed field exports in crates/open-tethyr/src/ax/mod.rs
+- [x] T008 Verify types compile with `cargo check --workspace --all-features`
 
 ---
 
@@ -26,11 +26,11 @@
 
 **Goal**: Fix the well-known path and discovery URL to match the AX spec.
 
-- [ ] T009 [US1] Update AxHttpClient::build_ax_url to return `https://<domain>/.well-known/agent-exchange` (remove _agent. prefix and .json extension) in crates/open-tethyr/src/http/client.rs
-- [ ] T010 [US1] Update AxHttpClient::validate_well_known_path to check for `/.well-known/agent-exchange` (no .json) in crates/open-tethyr/src/http/client.rs
-- [ ] T011 [US1] Update FileWriter::write_structure to output file named `agent-exchange` (not `agent-exchange.json`) in crates/open-tethyr/src/http/file_writer.rs
-- [ ] T012 [US1] Update property_url.rs tests: URL format assertions to `https://<domain>/.well-known/agent-exchange` in crates/open-tethyr/tests/property_url.rs
-- [ ] T013 [US1] Update property_wellknown.rs test: output path assertion to `.well-known/agent-exchange` in crates/open-tethyr/tests/property_wellknown.rs
+- [x] T009 [US1] Update AxHttpClient::build_ax_url to return `https://<domain>/.well-known/agent-exchange` (remove _agent. prefix and .json extension) in crates/open-tethyr/src/http/client.rs
+- [x] T010 [US1] Update AxHttpClient::validate_well_known_path to check for `/.well-known/agent-exchange` (no .json) in crates/open-tethyr/src/http/client.rs
+- [x] T011 [US1] Update FileWriter::write_structure to output file named `agent-exchange` (not `agent-exchange.json`) in crates/open-tethyr/src/http/file_writer.rs
+- [x] T012 [US1] Update property_url.rs tests: URL format assertions to `https://<domain>/.well-known/agent-exchange` in crates/open-tethyr/tests/property_url.rs
+- [x] T013 [US1] Update property_wellknown.rs test: output path assertion to `.well-known/agent-exchange` in crates/open-tethyr/tests/property_wellknown.rs
 
 ---
 
@@ -38,15 +38,15 @@
 
 **Goal**: Generate flat AX documents, parse both flat and legacy wrapper.
 
-- [ ] T014 [US2] Update AxGenerator::generate_record to return a single AgentExchangeRecord (flat document) instead of AgentExchangeDocument wrapper in crates/open-tethyr/src/ax/generator.rs
-- [ ] T015 [US2] Add parsing function that detects and handles both flat AX documents and legacy {records:[...]} wrapper format in crates/open-tethyr/src/ax/record.rs
-- [ ] T016 [US2] Update GenerateCommand to write flat AX JSON (single record per file) in crates/cli/src/commands/generate.rs
-- [ ] T017 [US2] Update ValidateCommand to handle both flat and wrapper formats in crates/cli/src/commands/validate.rs
-- [ ] T018 [US2] Update DiscoverCommand to handle both flat and wrapper response formats in crates/cli/src/commands/discover.rs
-- [ ] T019 [US2] Update OpenTethyr client discover() return type to handle flat AX document in crates/open-tethyr/src/client.rs
-- [ ] T020 [US2] Update CacheCoordinator to store and return flat AX JSON in crates/open-tethyr/src/cache/coordinator.rs
-- [ ] T021 [US2] Update server handlers to return flat AX JSON from discover endpoint in crates/open-tethyr/src/server/handlers.rs
-- [ ] T022 [US2] Update lib.rs re-exports and doc example for flat document model in crates/open-tethyr/src/lib.rs
+- [x] T014 [US2] Update AxGenerator::generate_record to return a single AgentExchangeRecord (flat document) instead of AgentExchangeDocument wrapper in crates/open-tethyr/src/ax/generator.rs
+- [x] T015 [US2] Add parsing function that detects and handles both flat AX documents and legacy {records:[...]} wrapper format in crates/open-tethyr/src/ax/record.rs
+- [x] T016 [US2] Update GenerateCommand to write flat AX JSON (single record per file) in crates/cli/src/commands/generate.rs
+- [x] T017 [US2] Update ValidateCommand to handle both flat and wrapper formats in crates/cli/src/commands/validate.rs
+- [x] T018 [US2] Update DiscoverCommand to handle both flat and wrapper response formats in crates/cli/src/commands/discover.rs
+- [x] T019 [US2] Update OpenTethyr client discover() return type to handle flat AX document in crates/open-tethyr/src/client.rs
+- [x] T020 [US2] Update CacheCoordinator to store and return flat AX JSON in crates/open-tethyr/src/cache/coordinator.rs
+- [x] T021 [US2] Update server handlers to return flat AX JSON from discover endpoint in crates/open-tethyr/src/server/handlers.rs
+- [x] T022 [US2] Update lib.rs re-exports and doc example for flat document model in crates/open-tethyr/src/lib.rs
 
 ---
 
@@ -54,11 +54,11 @@
 
 **Goal**: Relax required fields and fix auth method handling per spec.
 
-- [ ] T023 [US3] Update AxValidator::validate_record to not require agent.provider (accept empty/missing) in crates/open-tethyr/src/ax/validator.rs
-- [ ] T024 [US3] Update AxValidator::validate_endpoints to not require endpoints[].auth (accept empty/missing) in crates/open-tethyr/src/ax/validator.rs
-- [ ] T025 [US3] Update AxValidator::validate_auth_methods to return warnings for unknown methods instead of errors in crates/open-tethyr/src/ax/validator.rs
-- [ ] T026 [US3] Update property_validation.rs tests for relaxed field requirements in crates/open-tethyr/tests/property_validation.rs
-- [ ] T027 [US3] Update property_auth_validation.rs to test AWS_IAM accepted and unknown methods produce warnings in crates/open-tethyr/tests/property_auth_validation.rs
+- [x] T023 [US3] Update AxValidator::validate_record to not require agent.provider (accept empty/missing) in crates/open-tethyr/src/ax/validator.rs
+- [x] T024 [US3] Update AxValidator::validate_endpoints to not require endpoints[].auth (accept empty/missing) in crates/open-tethyr/src/ax/validator.rs
+- [x] T025 [US3] Update AxValidator::validate_auth_methods to return warnings for unknown methods instead of errors in crates/open-tethyr/src/ax/validator.rs
+- [x] T026 [US3] Update property_validation.rs tests for relaxed field requirements in crates/open-tethyr/tests/property_validation.rs
+- [x] T027 [US3] Update property_auth_validation.rs to test AWS_IAM accepted and unknown methods produce warnings in crates/open-tethyr/tests/property_auth_validation.rs
 
 ---
 
@@ -66,12 +66,12 @@
 
 **Goal**: Verify typed fields serialize/deserialize correctly.
 
-- [ ] T028 [US4] Update AxGenerator to populate security.issuer and security.jwks_url from OAuth provider templates (instead of nested oauth block) in crates/open-tethyr/src/ax/generator.rs
-- [ ] T029 [US4] Update OAuthEndpoints type or remove it; OAuth providers now return (issuer, jwks_url) pair for flat security in crates/open-tethyr/src/auth/provider.rs and crates/open-tethyr/src/auth/okta.rs, auth0.rs, generic.rs
-- [ ] T030 [US4] Write property test for capabilities round-trip: intents, async, supports_callbacks, callback_modes in crates/open-tethyr/tests/property_serialization.rs
-- [ ] T031 [US4] Write property test for schema round-trip: graphql_schema_url, mcp_manifest_url, rest_openapi_url, introspection in crates/open-tethyr/tests/property_serialization.rs
-- [ ] T032 [US4] Write property test for limits round-trip: max_concurrent_tasks, max_task_ttl_seconds, rate_limit_per_minute in crates/open-tethyr/tests/property_serialization.rs
-- [ ] T033 [US4] Write property test for flat security round-trip: issuer, jwks_url, signature, metadata_signature in crates/open-tethyr/tests/property_serialization.rs
+- [x] T028 [US4] Update AxGenerator to populate security.issuer and security.jwks_url from OAuth provider templates (instead of nested oauth block) in crates/open-tethyr/src/ax/generator.rs
+- [x] T029 [US4] Update OAuthEndpoints type or remove it; OAuth providers now return (issuer, jwks_url) pair for flat security in crates/open-tethyr/src/auth/provider.rs and crates/open-tethyr/src/auth/okta.rs, auth0.rs, generic.rs
+- [x] T030 [US4] Write property test for capabilities round-trip: intents, async, supports_callbacks, callback_modes in crates/open-tethyr/tests/property_serialization.rs
+- [x] T031 [US4] Write property test for schema round-trip: graphql_schema_url, mcp_manifest_url, rest_openapi_url, introspection in crates/open-tethyr/tests/property_serialization.rs
+- [x] T032 [US4] Write property test for limits round-trip: max_concurrent_tasks, max_task_ttl_seconds, rate_limit_per_minute in crates/open-tethyr/tests/property_serialization.rs
+- [x] T033 [US4] Write property test for flat security round-trip: issuer, jwks_url, signature, metadata_signature in crates/open-tethyr/tests/property_serialization.rs
 
 ---
 
@@ -79,16 +79,16 @@
 
 **Purpose**: Update all remaining tests, integration tests, docs, and verify everything passes.
 
-- [ ] T034 Update property_generation.rs tests for flat document output and new security structure in crates/open-tethyr/tests/property_generation.rs
-- [ ] T035 Update property_oauth.rs tests for flat security output (issuer + jwks_url, not nested oauth) in crates/open-tethyr/tests/property_oauth.rs
-- [ ] T036 [P] Update integration_e2e.rs test for flat document and new paths in crates/open-tethyr/tests/integration_e2e.rs
-- [ ] T037 [P] Update integration_oauth.rs test for flat security structure in crates/open-tethyr/tests/integration_oauth.rs
-- [ ] T038 [P] Update test_generate_validate.rs CLI test for new output path and flat structure in crates/cli/tests/test_generate_validate.rs
-- [ ] T039 [P] Update test_validate_detailed.rs for relaxed field requirements in crates/cli/tests/test_validate_detailed.rs
-- [ ] T040 Update docs/features.md and docs/setup-guide.md for new paths, structure, and field names in docs/
-- [ ] T041 Run `cargo clippy --workspace --all-features -- -D warnings` and fix all warnings
-- [ ] T042 Run `cargo fmt --all` and verify formatting
-- [ ] T043 Run `cargo test --workspace --all-features` and verify all tests pass (target: 94+ tests, zero failures)
+- [x] T034 Update property_generation.rs tests for flat document output and new security structure in crates/open-tethyr/tests/property_generation.rs
+- [x] T035 Update property_oauth.rs tests for flat security output (issuer + jwks_url, not nested oauth) in crates/open-tethyr/tests/property_oauth.rs
+- [x] T036 [P] Update integration_e2e.rs test for flat document and new paths in crates/open-tethyr/tests/integration_e2e.rs
+- [x] T037 [P] Update integration_oauth.rs test for flat security structure in crates/open-tethyr/tests/integration_oauth.rs
+- [x] T038 [P] Update test_generate_validate.rs CLI test for new output path and flat structure in crates/cli/tests/test_generate_validate.rs
+- [x] T039 [P] Update test_validate_detailed.rs for relaxed field requirements in crates/cli/tests/test_validate_detailed.rs
+- [x] T040 Update docs/features.md and docs/setup-guide.md for new paths, structure, and field names in docs/
+- [x] T041 Run `cargo clippy --workspace --all-features -- -D warnings` and fix all warnings
+- [x] T042 Run `cargo fmt --all` and verify formatting
+- [x] T043 Run `cargo test --workspace --all-features` and verify all tests pass (target: 94+ tests, zero failures)
 
 ---
 

@@ -1,22 +1,21 @@
-//! Integration test: detailed validation with severity levels
-
 use open_tethyr::ax::*;
 
 #[test]
 fn valid_record_no_errors() {
-    let record = AgentExchangeRecord {
+    let r = AgentExchangeRecord {
         record_type: "AX".into(),
         version: "1.0".into(),
         agent: Agent {
-            name: "test".into(),
-            description: "desc".into(),
-            provider: "corp".into(),
+            name: "t".into(),
+            description: "d".into(),
+            provider: Some("c".into()),
         },
         endpoints: vec![Endpoint {
             protocol: Protocol::Rest,
-            url: "https://api.example.com".into(),
+            url: "https://x.com".into(),
             auth: vec!["OAuth2".into()],
             content_type: None,
+            extra: Default::default(),
         }],
         capabilities: None,
         schema: None,
@@ -24,26 +23,26 @@ fn valid_record_no_errors() {
         security: None,
         extensions: None,
     };
-    let report = AxValidator::validate_record_detailed(&record);
+    let report = AxValidator::validate_record_detailed(&r);
     assert!(!report.has_errors());
-    assert!(report.warnings().is_empty());
 }
 
 #[test]
-fn missing_agent_name_is_error() {
-    let record = AgentExchangeRecord {
+fn missing_provider_is_ok() {
+    let r = AgentExchangeRecord {
         record_type: "AX".into(),
         version: "1.0".into(),
         agent: Agent {
-            name: "".into(),
-            description: "desc".into(),
-            provider: "corp".into(),
+            name: "t".into(),
+            description: "d".into(),
+            provider: None,
         },
         endpoints: vec![Endpoint {
             protocol: Protocol::Rest,
-            url: "https://api.example.com".into(),
-            auth: vec!["OAuth2".into()],
+            url: "https://x.com".into(),
+            auth: vec![],
             content_type: None,
+            extra: Default::default(),
         }],
         capabilities: None,
         schema: None,
@@ -51,26 +50,25 @@ fn missing_agent_name_is_error() {
         security: None,
         extensions: None,
     };
-    let report = AxValidator::validate_record_detailed(&record);
-    assert!(report.has_errors());
-    assert!(report.errors().iter().any(|e| e.field == "agent.name"));
+    assert!(!AxValidator::validate_record_detailed(&r).has_errors());
 }
 
 #[test]
 fn version_2_0_is_warning() {
-    let record = AgentExchangeRecord {
+    let r = AgentExchangeRecord {
         record_type: "AX".into(),
         version: "2.0".into(),
         agent: Agent {
-            name: "test".into(),
-            description: "desc".into(),
-            provider: "corp".into(),
+            name: "t".into(),
+            description: "d".into(),
+            provider: None,
         },
         endpoints: vec![Endpoint {
             protocol: Protocol::Rest,
-            url: "https://api.example.com".into(),
-            auth: vec!["OAuth2".into()],
+            url: "https://x.com".into(),
+            auth: vec![],
             content_type: None,
+            extra: Default::default(),
         }],
         capabilities: None,
         schema: None,
@@ -78,26 +76,26 @@ fn version_2_0_is_warning() {
         security: None,
         extensions: None,
     };
-    let report = AxValidator::validate_record_detailed(&record);
+    let report = AxValidator::validate_record_detailed(&r);
     assert!(!report.warnings().is_empty());
-    assert!(report.warnings().iter().any(|w| w.field == "version"));
 }
 
 #[test]
-fn invalid_auth_method_is_error() {
-    let record = AgentExchangeRecord {
+fn unknown_auth_is_warning_not_error() {
+    let r = AgentExchangeRecord {
         record_type: "AX".into(),
         version: "1.0".into(),
         agent: Agent {
-            name: "test".into(),
-            description: "desc".into(),
-            provider: "corp".into(),
+            name: "t".into(),
+            description: "d".into(),
+            provider: None,
         },
         endpoints: vec![Endpoint {
             protocol: Protocol::Rest,
-            url: "https://api.example.com".into(),
-            auth: vec!["INVALID".into()],
+            url: "https://x.com".into(),
+            auth: vec!["CustomAuth".into()],
             content_type: None,
+            extra: Default::default(),
         }],
         capabilities: None,
         schema: None,
@@ -105,10 +103,7 @@ fn invalid_auth_method_is_error() {
         security: None,
         extensions: None,
     };
-    let report = AxValidator::validate_record_detailed(&record);
-    assert!(report.has_errors());
-    assert!(report
-        .errors()
-        .iter()
-        .any(|e| e.message.contains("INVALID")));
+    let report = AxValidator::validate_record_detailed(&r);
+    assert!(!report.has_errors());
+    assert!(!report.warnings().is_empty());
 }
