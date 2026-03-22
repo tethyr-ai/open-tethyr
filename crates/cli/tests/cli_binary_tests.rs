@@ -3,7 +3,6 @@
 
 use assert_cmd::Command;
 use predicates::prelude::*;
-use std::io::Write;
 
 fn cmd() -> Command {
     Command::cargo_bin("open-tethyr").unwrap()
