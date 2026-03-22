@@ -1,9 +1,14 @@
-//! Generic OAuth2 Provider
-//!
-//! Placeholder for generic OAuth2 provider implementation.
-//! Supports RFC 8414 compliant OAuth2/OIDC providers.
-
-/// Generic OAuth2 provider for RFC 8414 compliant providers
-pub struct GenericOAuth2Provider {
-    // Implementation will be added in task 5.2
+use super::provider::OAuthProvider;
+use crate::error::OAuthError;
+pub struct GenericOAuth2Provider;
+impl OAuthProvider for GenericOAuth2Provider {
+    fn provider_name(&self) -> &str {
+        "generic"
+    }
+    fn generate_endpoints(&self, domain: &str) -> Result<(String, String), OAuthError> {
+        Ok((
+            format!("https://{}", domain),
+            format!("https://{}/.well-known/jwks.json", domain),
+        ))
+    }
 }

@@ -7,8 +7,8 @@ use clap::{Parser, Subcommand};
 mod commands;
 
 use commands::{
-    discover::DiscoverCommand, generate::GenerateCommand, serve::ServeCommand,
-    validate::ValidateCommand,
+    cache_invalidate::CacheInvalidateCommand, discover::DiscoverCommand, generate::GenerateCommand,
+    serve::ServeCommand, validate::ValidateCommand,
 };
 
 #[derive(Parser)]
@@ -30,12 +30,21 @@ pub enum Commands {
     Discover(DiscoverCommand),
     /// Start cache server
     Serve(ServeCommand),
+    /// Invalidate cache entries
+    CacheInvalidate(CacheInvalidateCommand),
 }
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Initialize tracing
-    tracing_subscriber::fmt::init();
+    // Initialize tracing with OPEN_TETHYR_LOG env var support
+    // Precedence: CLI > env > config file > defaults (constitution mandate)
+    let log_filter = std::env::var("OPEN_TETHYR_LOG").unwrap_or_else(|_| "info".to_string());
+    tracing_subscriber::fmt()
+        .with_env_filter(
+            tracing_subscriber::EnvFilter::try_new(&log_filter)
+                .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("info")),
+        )
+        .init();
 
     let cli = Cli::parse();
 
@@ -44,6 +53,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Commands::Validate(cmd) => cmd.execute().await?,
         Commands::Discover(cmd) => cmd.execute().await?,
         Commands::Serve(cmd) => cmd.execute().await?,
+        Commands::CacheInvalidate(cmd) => cmd.execute().await?,
     }
 
     Ok(())

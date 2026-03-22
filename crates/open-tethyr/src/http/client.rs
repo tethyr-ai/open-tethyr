@@ -1,8 +1,78 @@
-//! HTTP Client Implementation
-//!
-//! Placeholder for AX HTTP client.
+//! HTTP Client - AX spec compliant paths
 
-/// HTTP client for fetching AX records
+use crate::ax::AgentExchangeRecord;
+use crate::error::HttpError;
+use std::time::Duration;
+
 pub struct AxHttpClient {
-    // Implementation will be added in task 6.2
+    client: reqwest::Client,
+    timeout: Duration,
+}
+
+impl AxHttpClient {
+    pub fn new(timeout_secs: Option<u64>) -> Result<Self, HttpError> {
+        let timeout = Duration::from_secs(timeout_secs.unwrap_or(30));
+        let client = reqwest::Client::builder()
+            .timeout(timeout)
+            .build()
+            .map_err(|e| HttpError::RequestFailed(e.to_string()))?;
+        Ok(Self { client, timeout })
+    }
+
+    /// Build AX discovery URL per spec: https://<domain>/.well-known/agent-exchange
+    pub fn build_ax_url(domain: &str) -> String {
+        format!("https://{}/.well-known/agent-exchange", domain)
+    }
+
+    pub fn validate_well_known_path(path: &str) -> Result<(), HttpError> {
+        if !path.ends_with("/.well-known/agent-exchange") {
+            return Err(HttpError::InvalidWellKnownPath(path.to_string()));
+        }
+        Ok(())
+    }
+
+    pub async fn fetch_ax_record(&self, domain: &str) -> Result<AgentExchangeRecord, HttpError> {
+        let url = Self::build_ax_url(domain);
+        let response = self.client.get(&url).send().await.map_err(|e| {
+            if e.is_timeout() {
+                HttpError::Timeout(self.timeout.as_secs())
+            } else {
+                HttpError::RequestFailed(e.to_string())
+            }
+        })?;
+        if !response.status().is_success() {
+            return Err(HttpError::InvalidResponse(
+                url,
+                format!("HTTP {}", response.status()),
+            ));
+        }
+        response
+            .json::<AgentExchangeRecord>()
+            .await
+            .map_err(|e| HttpError::InvalidResponse(url, e.to_string()))
+    }
+
+    pub async fn fetch_from_cache(
+        &self,
+        cache_url: &str,
+        domain: &str,
+    ) -> Result<AgentExchangeRecord, HttpError> {
+        let url = format!("{}/discover/{}", cache_url.trim_end_matches('/'), domain);
+        let response = self
+            .client
+            .get(&url)
+            .send()
+            .await
+            .map_err(|e| HttpError::RequestFailed(e.to_string()))?;
+        if !response.status().is_success() {
+            return Err(HttpError::InvalidResponse(
+                url,
+                format!("HTTP {}", response.status()),
+            ));
+        }
+        response
+            .json::<AgentExchangeRecord>()
+            .await
+            .map_err(|e| HttpError::InvalidResponse(url, e.to_string()))
+    }
 }

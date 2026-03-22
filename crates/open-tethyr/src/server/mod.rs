@@ -1,10 +1,9 @@
-//! Cache server implementation
-//!
-//! This module provides the HTTP cache server functionality.
+//! Cache Server Implementation
 
 pub mod cache_server;
 pub mod handlers;
 pub mod middleware;
 pub mod policy;
 
-pub use cache_server::CacheServer;
+pub use cache_server::{AppState, CacheServer};
+pub use policy::PolicyEngine;

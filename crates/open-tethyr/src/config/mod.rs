@@ -1,14 +1,11 @@
-//! Configuration System
-//!
-//! This module provides YAML configuration parsing, inheritance,
-//! merging, and validation capabilities.
+//! Configuration Management
 
 mod loader;
-mod merger;
-mod models;
-mod validator;
+pub mod merger;
+pub mod models;
+pub mod validator;
 
-pub use loader::ConfigLoader;
+pub use loader::load_config;
 pub use merger::ConfigMerger;
-pub use models::{AgentConfig, AgentDefaults, AgentDefinition};
+pub use models::*;
 pub use validator::ConfigValidator;
