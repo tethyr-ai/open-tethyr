@@ -2,8 +2,8 @@ use criterion::{criterion_group, criterion_main, Criterion};
 use open_tethyr::ax::*;
 use open_tethyr::cache::memory::{CacheEntry, MemoryCache};
 use open_tethyr::config::*;
-use std::time::{Duration, Instant};
 use serde_json;
+use std::time::{Duration, Instant};
 
 fn bench_cache_put(c: &mut Criterion) {
     let cache = MemoryCache::new(10_000);
