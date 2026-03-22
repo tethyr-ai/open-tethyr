@@ -43,6 +43,7 @@ tracing-subscriber = { workspace = true }
 tempfile = "3"
 axum = { workspace = true }
 tokio = { workspace = true }
+criterion = { workspace = true }
 
 [[bench]]
 name = "benchmarks"

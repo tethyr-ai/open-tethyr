@@ -3,6 +3,7 @@ use open_tethyr::ax::*;
 use open_tethyr::cache::memory::{CacheEntry, MemoryCache};
 use open_tethyr::config::*;
 use std::time::{Duration, Instant};
+use serde_json;
 
 fn bench_cache_put(c: &mut Criterion) {
     let cache = MemoryCache::new(10_000);
@@ -58,6 +59,7 @@ fn bench_ax_parse(c: &mut Criterion) {
                 url: "https://api.example.com".into(),
                 auth: vec!["OAuth2".into()],
                 content_type: None,
+                extra: serde_json::Map::new(),
             }],
             capabilities: None,
             schema: None,
@@ -86,6 +88,7 @@ fn bench_ax_validate(c: &mut Criterion) {
             url: "https://api.example.com".into(),
             auth: vec!["OAuth2".into()],
             content_type: None,
+            extra: serde_json::Map::new(),
         }],
         capabilities: None,
         schema: None,
