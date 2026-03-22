@@ -128,7 +128,7 @@ fn cache_config_default() {
     assert_eq!(cache.max_entries, 10_000);
     assert_eq!(cache.default_ttl, 3600);
     assert_eq!(cache.cleanup_interval, 300);
-    assert_eq!(cache.enable_lru, true);
+    assert!(cache.enable_lru);
 }
 
 #[test]
@@ -146,13 +146,13 @@ fn cache_config_serialization() {
     assert_eq!(deserialized.max_entries, 5000);
     assert_eq!(deserialized.default_ttl, 1800);
     assert_eq!(deserialized.cleanup_interval, 600);
-    assert_eq!(deserialized.enable_lru, false);
+    assert!(!deserialized.enable_lru);
 }
 
 #[test]
 fn policy_config_default() {
     let policy = PolicyConfig::default();
-    assert_eq!(policy.domain_locking, false);
+    assert!(!policy.domain_locking);
     assert!(policy.home_domain.is_none());
     assert!(policy.allowlist.is_empty());
 }
@@ -168,7 +168,7 @@ fn policy_config_serialization() {
     let json_str = serde_json::to_string(&policy).unwrap();
     let deserialized: PolicyConfig = serde_json::from_str(&json_str).unwrap();
 
-    assert_eq!(deserialized.domain_locking, true);
+    assert!(deserialized.domain_locking);
     assert_eq!(deserialized.home_domain, Some("example.com".to_string()));
     assert_eq!(deserialized.allowlist, vec!["trusted1.com", "trusted2.com"]);
 }
@@ -266,10 +266,10 @@ server:
     assert_eq!(server.cache.max_entries, 5000);
     assert_eq!(server.cache.default_ttl, 7200);
     assert_eq!(server.cache.cleanup_interval, 600);
-    assert_eq!(server.cache.enable_lru, false);
+    assert!(!server.cache.enable_lru);
 
     // Test policy config
-    assert_eq!(server.policy.domain_locking, true);
+    assert!(server.policy.domain_locking);
     assert_eq!(server.policy.home_domain, Some("example.com".to_string()));
     assert_eq!(server.policy.allowlist, vec!["trusted.com"]);
 
