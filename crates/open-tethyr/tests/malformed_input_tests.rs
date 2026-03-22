@@ -1,7 +1,7 @@
 //! Malformed Input Tests - ensure the parser doesn't panic on garbage
 //! Critical for infrastructure receiving untrusted data from the network.
 
-use open_tethyr::ax::{parse_ax_json, AgentExchangeRecord, AxValidator};
+use open_tethyr::ax::{parse_ax_json, AxValidator};
 
 // === Malformed JSON ===
 

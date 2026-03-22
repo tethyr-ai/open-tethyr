@@ -2,7 +2,6 @@ use criterion::{criterion_group, criterion_main, Criterion};
 use open_tethyr::ax::*;
 use open_tethyr::cache::memory::{CacheEntry, MemoryCache};
 use open_tethyr::config::*;
-use serde_json;
 use std::time::{Duration, Instant};
 
 fn bench_cache_put(c: &mut Criterion) {
@@ -52,7 +51,7 @@ fn bench_ax_parse(c: &mut Criterion) {
             agent: Agent {
                 name: "test".into(),
                 description: "desc".into(),
-                provider: "corp".into(),
+                provider: Some("corp".into()),
             },
             endpoints: vec![Endpoint {
                 protocol: Protocol::Rest,
@@ -81,7 +80,7 @@ fn bench_ax_validate(c: &mut Criterion) {
         agent: Agent {
             name: "test".into(),
             description: "desc".into(),
-            provider: "corp".into(),
+            provider: Some("corp".into()),
         },
         endpoints: vec![Endpoint {
             protocol: Protocol::Rest,
